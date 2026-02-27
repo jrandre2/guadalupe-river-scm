@@ -1,0 +1,457 @@
+[
+  {
+    "source": "bea_income",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/bea_income/cainc1_tx_counties.parquet",
+    "rows": 14224,
+    "timestamp": "2026-02-27T19:27:43.299597+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "fema_declarations",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/fema_declarations/tx_declarations.parquet",
+    "rows": 5388,
+    "timestamp": "2026-02-27T19:27:43.304888+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "fema_declarations",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/fema_declarations/dr1257_counties.parquet",
+    "rows": 43,
+    "timestamp": "2026-02-27T19:27:43.309453+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "fema_declarations",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/fema_declarations/flood_exclusion_counties.parquet",
+    "rows": 83,
+    "timestamp": "2026-02-27T19:27:43.318571+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "census_bds",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/census_bds/bds_tx_counties.parquet",
+    "rows": 11730,
+    "timestamp": "2026-02-27T19:27:44.642662+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "bea_income",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/bea_income/cainc4_tx_counties.parquet",
+    "rows": 14224,
+    "timestamp": "2026-02-27T19:27:44.807919+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "bea_income",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/bea_income/bea_income_tx_counties.parquet",
+    "rows": 13208,
+    "timestamp": "2026-02-27T19:27:44.820423+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "fema_declarations",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/fema_declarations/tx_declarations.parquet",
+    "rows": 5388,
+    "timestamp": "2026-02-27T19:28:02.579285+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "fema_declarations",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/fema_declarations/dr1257_counties.parquet",
+    "rows": 43,
+    "timestamp": "2026-02-27T19:28:02.584206+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "fema_declarations",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/fema_declarations/flood_exclusion_counties.parquet",
+    "rows": 83,
+    "timestamp": "2026-02-27T19:28:02.591368+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "fema_declarations",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/fema_declarations/tx_declarations.parquet",
+    "rows": 5388,
+    "timestamp": "2026-02-27T19:28:47.435960+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "fema_declarations",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/fema_declarations/dr1257_counties.parquet",
+    "rows": 43,
+    "timestamp": "2026-02-27T19:28:47.440208+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "fema_declarations",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/fema_declarations/flood_exclusion_counties.parquet",
+    "rows": 83,
+    "timestamp": "2026-02-27T19:28:47.446587+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "bea_income",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/bea_income/cainc1_tx_counties.parquet",
+    "rows": 14224,
+    "timestamp": "2026-02-27T19:30:32.233447+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "fema_declarations",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/fema_declarations/tx_declarations.parquet",
+    "rows": 5388,
+    "timestamp": "2026-02-27T19:30:32.268125+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "fema_declarations",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/fema_declarations/dr1257_counties.parquet",
+    "rows": 43,
+    "timestamp": "2026-02-27T19:30:32.272506+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "fema_declarations",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/fema_declarations/flood_exclusion_counties.parquet",
+    "rows": 83,
+    "timestamp": "2026-02-27T19:30:32.278152+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "census_bds",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/census_bds/bds_tx_counties.parquet",
+    "rows": 11730,
+    "timestamp": "2026-02-27T19:30:33.827277+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "bea_income",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/bea_income/cainc4_tx_counties.parquet",
+    "rows": 14224,
+    "timestamp": "2026-02-27T19:30:34.129036+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "bea_income",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/bea_income/bea_income_tx_counties.parquet",
+    "rows": 13208,
+    "timestamp": "2026-02-27T19:30:34.140747+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "fema_declarations",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/fema_declarations/tx_declarations.parquet",
+    "rows": 5388,
+    "timestamp": "2026-02-27T19:30:34.330454+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "fema_declarations",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/fema_declarations/dr1257_counties.parquet",
+    "rows": 43,
+    "timestamp": "2026-02-27T19:30:34.333486+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "fema_declarations",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/fema_declarations/flood_exclusion_counties.parquet",
+    "rows": 83,
+    "timestamp": "2026-02-27T19:30:34.337392+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "donor_pool",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/fema_declarations/donor_pool.parquet",
+    "rows": 254,
+    "timestamp": "2026-02-27T19:30:34.373587+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "fema_declarations",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/fema_declarations/tx_declarations.parquet",
+    "rows": 5388,
+    "timestamp": "2026-02-27T19:30:58.812504+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "fema_declarations",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/fema_declarations/dr1257_counties.parquet",
+    "rows": 43,
+    "timestamp": "2026-02-27T19:30:58.817073+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "fema_declarations",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/fema_declarations/flood_exclusion_counties.parquet",
+    "rows": 83,
+    "timestamp": "2026-02-27T19:30:58.822587+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "fema_declarations",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/fema_declarations/tx_declarations.parquet",
+    "rows": 5388,
+    "timestamp": "2026-02-27T19:30:59.834156+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "fema_declarations",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/fema_declarations/dr1257_counties.parquet",
+    "rows": 43,
+    "timestamp": "2026-02-27T19:30:59.839379+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "fema_declarations",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/fema_declarations/flood_exclusion_counties.parquet",
+    "rows": 83,
+    "timestamp": "2026-02-27T19:30:59.845922+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "fema_ia",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/fema_ia/ia_dr1257.parquet",
+    "rows": 1,
+    "timestamp": "2026-02-27T19:31:00.504582+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "fema_pa",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/fema_pa/pa_dr1257.parquet",
+    "rows": 2044,
+    "timestamp": "2026-02-27T19:31:00.676985+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "fema_declarations",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/fema_declarations/tx_declarations.parquet",
+    "rows": 5388,
+    "timestamp": "2026-02-27T19:31:01.995447+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "fema_declarations",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/fema_declarations/dr1257_counties.parquet",
+    "rows": 43,
+    "timestamp": "2026-02-27T19:31:01.999990+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "fema_declarations",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/fema_declarations/flood_exclusion_counties.parquet",
+    "rows": 83,
+    "timestamp": "2026-02-27T19:31:02.005847+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "fema_hma",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/fema_hma/hma_texas.parquet",
+    "rows": 4166,
+    "timestamp": "2026-02-27T19:31:04.016849+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "fema_nfip",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/fema_nfip/nfip_tx_1998.parquet",
+    "rows": 12582,
+    "timestamp": "2026-02-27T19:31:24.015240+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "fema_pa",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/fema_pa/pa_tx_floods.parquet",
+    "rows": 50000,
+    "timestamp": "2026-02-27T19:31:25.316251+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "usgs_nwis",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/usgs_nwis/guadalupe_daily_discharge.parquet",
+    "rows": 52916,
+    "timestamp": "2026-02-27T19:32:26.781875+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "census_cbp",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/census_cbp/cbp_tx_counties.parquet",
+    "rows": 9413,
+    "timestamp": "2026-02-27T19:32:42.650357+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "census_acs",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/census_acs/census_covariates_tx.parquet",
+    "rows": 3302,
+    "timestamp": "2026-02-27T19:32:47.109983+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "bls_laus",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/bls_laus/laus_tx_counties.parquet",
+    "rows": 8890,
+    "timestamp": "2026-02-27T19:33:12.668586+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "fema_nfip",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/fema_nfip/nfip_tx_1990_2005.parquet",
+    "rows": 71807,
+    "timestamp": "2026-02-27T19:33:30.155187+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "irs_soi",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/irs_soi/irs_soi_tx_counties.parquet",
+    "rows": 2805,
+    "timestamp": "2026-02-27T19:34:17.386833+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "sba_loans",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/sba_loans/sba_loans_tx.parquet",
+    "rows": 6,
+    "timestamp": "2026-02-27T19:40:19.010532+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "noaa_storms",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/noaa_storms/storm_events_tx.parquet",
+    "rows": 4240,
+    "timestamp": "2026-02-27T19:41:15.259204+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "census_bps",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/census_bps/bps_tx_counties.parquet",
+    "rows": 2027,
+    "timestamp": "2026-02-27T19:43:40.690488+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "census_qwi",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/census_qwi/qwi_tx_counties.parquet",
+    "rows": 7905,
+    "timestamp": "2026-02-27T19:47:24.028423+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "census_qwi",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/census_qwi/qwi_tx_counties.parquet",
+    "rows": 7905,
+    "timestamp": "2026-02-27T19:54:32.780675+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "bls_qcew",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/bls_qcew/qcew_tx_counties.parquet",
+    "rows": 17876,
+    "timestamp": "2026-02-27T20:03:18.209191+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "bls_laus",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/bls_laus/laus_tx_counties.parquet",
+    "rows": 8890,
+    "timestamp": "2026-02-27T20:37:29.451648+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "census_bps",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/census_bps/bps_tx_counties.parquet",
+    "rows": 7824,
+    "timestamp": "2026-02-27T20:39:02.894476+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "bea_income",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/processed/panels/bea_income.parquet",
+    "rows": 13208,
+    "timestamp": "2026-02-27T20:40:47.394098+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "bds",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/processed/panels/bds.parquet",
+    "rows": 11730,
+    "timestamp": "2026-02-27T20:40:47.432174+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "qcew",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/processed/panels/qcew.parquet",
+    "rows": 8892,
+    "timestamp": "2026-02-27T20:40:47.482053+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "laus",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/processed/panels/laus.parquet",
+    "rows": 8890,
+    "timestamp": "2026-02-27T20:40:47.503093+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "cbp",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/processed/panels/cbp.parquet",
+    "rows": 9413,
+    "timestamp": "2026-02-27T20:40:47.523466+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "bps",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/processed/panels/bps.parquet",
+    "rows": 7824,
+    "timestamp": "2026-02-27T20:40:47.539193+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "qwi",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/processed/panels/qwi.parquet",
+    "rows": 7874,
+    "timestamp": "2026-02-27T20:40:47.562297+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "irs_soi",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/processed/panels/irs_soi.parquet",
+    "rows": 2794,
+    "timestamp": "2026-02-27T20:40:47.574628+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "acs_covariates",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/processed/panels/acs_covariates.parquet",
+    "rows": 3302,
+    "timestamp": "2026-02-27T20:40:47.590940+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "donor_pool",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/processed/panels/donor_pool.parquet",
+    "rows": 254,
+    "timestamp": "2026-02-27T20:40:47.598061+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "cpi_deflator",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/processed/deflator/cpi_deflator.parquet",
+    "rows": 113,
+    "timestamp": "2026-02-27T20:41:27.046437+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "scm_panel",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/processed/panels/scm_panel.parquet",
+    "rows": 11938,
+    "timestamp": "2026-02-27T20:42:16.683365+00:00",
+    "status": "complete"
+  },
+  {
+    "source": "scm_panel",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/processed/panels/scm_panel.parquet",
+    "rows": 11938,
+    "timestamp": "2026-02-27T20:44:03.285187+00:00",
+    "status": "complete"
+  }
+]

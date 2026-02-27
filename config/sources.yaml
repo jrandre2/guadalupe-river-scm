@@ -1,0 +1,154 @@
+# Per-source API endpoints, rate limits, and configuration.
+# API keys are loaded from .env at runtime.
+
+bls_qcew:
+  description: "BLS Quarterly Census of Employment and Wages"
+  open_data_url: "https://data.bls.gov/cew/data/api/{year}/{quarter}/area/{area_code}.csv"
+  bulk_url: "https://data.bls.gov/cew/data/files/{year}/csv/{year}_annual_singlefile.zip"
+  rate_limit_delay: 0.5
+  temporal: {start: 1990, end: 2024}
+  output_dir: "bls_qcew"
+
+bls_laus:
+  description: "BLS Local Area Unemployment Statistics"
+  bulk_url: "https://download.bls.gov/pub/time.series/la/"
+  api_url: "https://api.bls.gov/publicAPI/v2/timeseries/data/"
+  rate_limit_delay: 0.5
+  temporal: {start: 1990, end: 2025}
+  output_dir: "bls_laus"
+
+bea_income:
+  description: "BEA Regional Personal Income"
+  api_url: "https://apps.bea.gov/api/data"
+  tables: ["CAINC1", "CAINC4", "CAINC30"]
+  rate_limit_delay: 1.0
+  temporal: {start: 1969, end: 2023}
+  output_dir: "bea_income"
+
+census_cbp:
+  description: "Census County Business Patterns"
+  api_url: "https://api.census.gov/data/{year}/cbp"
+  rate_limit_delay: 0.5
+  temporal: {start: 1986, end: 2023}
+  output_dir: "census_cbp"
+
+census_bds:
+  description: "Census Business Dynamics Statistics"
+  api_url: "https://api.census.gov/data/timeseries/bds"
+  rate_limit_delay: 0.5
+  temporal: {start: 1978, end: 2023}
+  output_dir: "census_bds"
+
+census_bps:
+  description: "Census Building Permits Survey"
+  api_url: "https://api.census.gov/data/{year}/bps/county"
+  bulk_url: "https://www.census.gov/construction/bps/"
+  rate_limit_delay: 0.5
+  temporal: {start: 1990, end: 2024}
+  output_dir: "census_bps"
+
+tx_comptroller:
+  description: "Texas Comptroller Local Sales Tax"
+  hist_url: "https://mycpa.cpa.state.tx.us/allocation/HistSales"
+  rate_limit_delay: 2.0
+  temporal: {start: 2002, end: 2025}
+  output_dir: "tx_comptroller"
+  manual_fallback: true
+
+irs_soi:
+  description: "IRS Statistics of Income County Data"
+  base_url: "https://www.irs.gov/statistics/soi-tax-stats-county-data"
+  temporal: {start: 1989, end: 2022}
+  output_dir: "irs_soi"
+
+census_qwi:
+  description: "Census LEHD Quarterly Workforce Indicators"
+  api_url: "https://api.census.gov/data/timeseries/qwi/sa"
+  rate_limit_delay: 1.0
+  temporal: {start: 1993, end: 2025}
+  output_dir: "census_qwi"
+
+census_acs:
+  description: "Census ACS and Decennial"
+  acs5_url: "https://api.census.gov/data/{year}/acs/acs5"
+  decennial_urls:
+    1990: "https://api.census.gov/data/1990/dec/stf3"
+    2000: "https://api.census.gov/data/2000/dec/sf3"
+    2010: "https://api.census.gov/data/2010/dec/sf1"
+    2020: "https://api.census.gov/data/2020/dec/dhc"
+  rate_limit_delay: 0.5
+  output_dir: "census_acs"
+
+fema_declarations:
+  description: "FEMA Disaster Declarations Summaries"
+  api_url: "https://www.fema.gov/api/open/v2/DisasterDeclarationsSummaries"
+  page_size: 1000
+  output_dir: "fema_declarations"
+
+fema_pa:
+  description: "FEMA Public Assistance Funded Projects"
+  api_url: "https://www.fema.gov/api/open/v2/PublicAssistanceGrantAwardActivities"
+  page_size: 1000
+  output_dir: "fema_pa"
+
+fema_ia:
+  description: "FEMA Individual Assistance"
+  api_url: "https://www.fema.gov/api/open/v2/IndividualAssistanceHousingRegistrantsLargeDisasters"
+  page_size: 1000
+  output_dir: "fema_ia"
+
+fema_hma:
+  description: "FEMA Hazard Mitigation Assistance"
+  api_url: "https://www.fema.gov/api/open/v2/HazardMitigationAssistanceProjects"
+  page_size: 1000
+  output_dir: "fema_hma"
+
+fema_nfip:
+  description: "FEMA NFIP Claims"
+  api_url: "https://www.fema.gov/api/open/v2/FimaNfipClaims"
+  page_size: 1000
+  output_dir: "fema_nfip"
+
+sba_loans:
+  description: "SBA Disaster Loan Data"
+  base_url: "https://data.sba.gov/dataset/disaster-loan-data"
+  output_dir: "sba_loans"
+
+hud_cdbgdr:
+  description: "HUD CDBG-DR"
+  portal_url: "https://drgr.hud.gov/public/"
+  manual_fallback: true
+  output_dir: "hud_cdbgdr"
+
+usaspending:
+  description: "USAspending.gov Federal Awards"
+  api_url: "https://api.usaspending.gov/api/v2/"
+  output_dir: "usaspending"
+
+noaa_storms:
+  description: "NOAA Storm Events Database"
+  bulk_url: "https://www.ncei.noaa.gov/pub/data/swdi/stormevents/csvfiles/"
+  output_dir: "noaa_storms"
+
+usgs_nwis:
+  description: "USGS Water Data (NWIS)"
+  api_url: "https://waterservices.usgs.gov/nwis/"
+  gauges:
+    - "08167800"  # Guadalupe River at Sattler
+    - "08168500"  # Guadalupe River above Comal River at New Braunfels
+    - "08169000"  # Comal River at New Braunfels
+    - "08169500"  # Guadalupe River at New Braunfels
+  parameters: ["00060", "00065"]  # discharge, gage height
+  output_dir: "usgs_nwis"
+
+fema_nfhl:
+  description: "FEMA National Flood Hazard Layer"
+  portal_url: "https://msc.fema.gov/portal/advanceSearch"
+  manual_fallback: true
+  output_dir: "fema_nfhl"
+
+twdb_flood:
+  description: "TWDB Flood Mapping"
+  base_url: "https://www.twdb.texas.gov/flood/"
+  manual_fallback: true
+  output_dir: "twdb_flood"

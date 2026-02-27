@@ -1,0 +1,40 @@
+[project]
+name = "guadalupe-scm"
+version = "0.1.0"
+description = "Synthetic Control Method analysis of long-term economic recovery after the 1998 Guadalupe River flood"
+requires-python = ">=3.11"
+
+dependencies = [
+    "requests>=2.31",
+    "httpx>=0.27",
+    "pandas>=2.1",
+    "pyarrow>=14.0",
+    "pyyaml>=6.0",
+    "python-dotenv>=1.0",
+    "tenacity>=8.2",
+    "ratelimit>=2.2",
+    "tqdm>=4.66",
+    "dataretrieval>=1.0",
+    "us>=3.1",
+    "click>=8.1",
+    "structlog>=23.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4",
+    "jupyter>=1.0",
+    "matplotlib>=3.8",
+    "seaborn>=0.13",
+    "openpyxl>=3.1",
+]
+
+[project.scripts]
+guadalupe-acquire = "src.pipeline:cli"
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["src*"]

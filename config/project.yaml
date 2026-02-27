@@ -1,0 +1,32 @@
+project:
+  name: "Guadalupe River Synthetic Controls Recovery"
+  treatment_event: "October 1998 Guadalupe River Flood"
+  disaster_declaration: "DR-1257-TX"
+  incident_period:
+    start: "1998-10-17"
+    end: "1998-11-15"
+  declaration_date: "1998-10-21"
+
+treated_unit:
+  name: "Comal County, TX"
+  fips: "48091"
+  state_fips: "48"
+  county_fips: "091"
+
+study_period:
+  pre_start: 1978
+  pre_end: 1998
+  post_start: 1999
+  post_end: 2025
+
+donor_pool:
+  scope: "texas"
+  state_fips: "48"
+  # Populated at runtime by fema_declarations.py
+  exclude_disaster_fips: []
+  n_counties: 254
+
+output:
+  raw_format: "parquet"
+  processed_format: "parquet"
+  naming: "{source}_{geography}_{timespan}.parquet"
