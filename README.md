@@ -16,32 +16,56 @@ The donor pool — the set of comparison counties — excludes any Texas county 
 
 ## Study Period
 
-- **Pre-flood (1978 -- 1998):** Used to calibrate the synthetic control so it closely matches Comal County's economy before the disaster struck.
-- **Post-flood (1999 -- 2025):** Used to track whether and when Comal County's actual economic trajectory converged back to what the synthetic control predicts.
+- **Pre-flood (1978--1998):** Used to calibrate the synthetic control so it closely matches Comal County's economy before the disaster struck.
+- **Post-flood (1999--2025):** Used to track whether and when Comal County's actual economic trajectory converged back to what the synthetic control predicts.
 
 ## Data Sources
 
 The project draws on a wide range of publicly available federal and state datasets to build a detailed picture of county-level economic activity over time:
 
-- **Income and earnings** from the Bureau of Economic Analysis
-- **Employment and wages** from the Bureau of Labor Statistics
-- **Business formation and closure** from the Census Bureau
-- **Building permits and construction activity** from the Census Bureau
-- **Unemployment rates** from local area statistics
-- **Workforce dynamics** (hiring, separations, earnings) from the Census Bureau
+- **Income and earnings** from the Bureau of Economic Analysis (1969+)
+- **Employment and wages** from the Bureau of Labor Statistics QCEW (1990+)
+- **Business formation and closure** from the Census Business Dynamics Statistics (1978+)
+- **Building permits and construction activity** from the Census Building Permits Survey (1990+)
+- **Unemployment rates** from BLS Local Area Unemployment Statistics (1990+)
+- **Workforce dynamics** (hiring, separations, earnings) from Census QWI (~1995+)
+- **Business counts and payroll** from the Census County Business Patterns (1986+)
 - **Demographics, housing, and poverty** from the American Community Survey and decennial census
-- **Household income** from IRS tax return data
-- **Sales tax revenue** from the Texas Comptroller
-- **Disaster aid and recovery funding** from FEMA, SBA, HUD, and USAspending.gov
+- **Household income** from IRS Statistics of Income (2011+)
+- **Disaster aid and recovery funding** from FEMA, SBA, and HUD
 - **Flood insurance claims** from the National Flood Insurance Program
-- **Physical flood and storm records** from NOAA
+- **Physical flood and storm records** from NOAA Storm Events
 - **River conditions** from USGS stream gauges on the Guadalupe and Comal Rivers
 
-## How It Works
+## Output
 
-The Python code in this repository handles data acquisition — downloading, cleaning, and organizing all of the source datasets into a consistent county-level panel. A pipeline orchestrator runs each data source in the correct order, respecting dependencies between steps.
+The pipeline produces a merged **SCM panel** at `data/processed/panels/scm_panel.parquet` (also `.csv`):
 
-The actual synthetic control estimation is performed in R.
+- **11,938 rows** (254 TX counties x 47 years)
+- **63 columns** spanning outcomes, covariates, and donor eligibility flags
+- All nominal dollar values deflated to constant **2020 dollars** using CPI-U
+- **171 donor-eligible counties** after excluding flood-affected areas
+
+## Project Structure
+
+```
+config/
+  project.yaml          # Treated unit, study period, disaster declaration
+  sources.yaml          # Per-source endpoint configuration
+src/
+  pipeline.py           # DAG orchestrator for data acquisition
+  config.py             # YAML + .env loader
+  acquire/              # 21 data source modules
+  process/
+    harmonize_county.py # Standardize all datasets to county-year panels
+    deflator.py         # CPI-U deflator (constant 2020 dollars)
+    panel_builder.py    # Merge harmonized data into final SCM panel
+  utils/                # Shared I/O, HTTP, API helpers
+data/
+  raw/                  # Downloaded data (gitignored)
+  processed/            # Harmonized panels + merged SCM panel (gitignored)
+R/                      # SCM estimation scripts (forthcoming)
+```
 
 ## Setup
 
@@ -51,13 +75,31 @@ Requires Python 3.11 or later. Install dependencies with:
 pip install -e ".[dev]"
 ```
 
-Some data sources require free API keys. Copy `.env.example` to `.env` and fill in keys for the Bureau of Labor Statistics, Census Bureau, and Bureau of Economic Analysis (registration links are in the file).
+**API keys are optional.** The pipeline downloads all data from bulk public endpoints that do not require authentication. If you want to use the Census, BLS, or BEA APIs directly (for faster or more targeted queries), copy `.env.example` to `.env` and add your keys.
 
 ## Running the Pipeline
 
+```bash
+# Full pipeline: acquire all data, harmonize, and build panel
+make all
+
+# Individual steps
+make acquire              # download all raw data (phases 1-3)
+make acquire-phase1       # anchor datasets and donor pool only
+make acquire-bea_income   # a single data source
+make harmonize            # standardize raw data to county-year panels
+make panel                # merge harmonized data + deflate + export
+
+# Utilities
+make list-tasks           # show all available data sources
+make clean-processed      # remove processed data (keeps raw)
 ```
-make acquire          # download everything
-make acquire-phase1   # anchor datasets and donor pool only
-make acquire-bea_income  # a single source
-make list-tasks       # show all available data sources
+
+Or run steps directly with Python:
+
+```bash
+python -m src.pipeline --phase 3               # acquire all phases
+python -m src.pipeline --task bea_income --force  # re-download one source
+python -c "from src.process.harmonize_county import run_all; run_all()"
+python -c "from src.process.panel_builder import save_panel; save_panel()"
 ```
