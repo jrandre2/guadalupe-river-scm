@@ -1,0 +1,37 @@
+=== Continuous Intensity DiD: ln(NFIP_paid+1) × Post | ZIP + Year FE ===
+
+--- log(Establishments) ---
+OLS estimation, Dep. Var.: ln_estab
+Observations: 351 
+Fixed-effects: zip: 13,  year: 27
+Standard-errors: Clustered (zip) 
+                Estimate Std. Error  t value Pr(>|t|) 
+intensity:post -0.029809   0.020293 -1.46893  0.16757 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 0.268273     Adj. R2: 0.909104
+                 Within R2: 0.078556
+
+--- log(Employment) ---
+OLS estimation, Dep. Var.: ln_emp
+Observations: 351 
+Fixed-effects: zip: 13,  year: 27
+Standard-errors: Clustered (zip) 
+               Estimate Std. Error  t value Pr(>|t|) 
+intensity:post 0.008026   0.034585 0.232057   0.8204 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 0.685188     Adj. R2: 0.674719
+                 Within R2: 9.465e-4
+
+--- log(Payroll, real 2020$) ---
+OLS estimation, Dep. Var.: ln_payann_real
+Observations: 351 
+Fixed-effects: zip: 13,  year: 27
+Standard-errors: Clustered (zip) 
+               Estimate Std. Error  t value Pr(>|t|) 
+intensity:post 0.046505   0.056429 0.824137  0.42594 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 1.05741     Adj. R2: 0.478104
+                Within R2: 0.01318 

@@ -453,5 +453,12 @@
     "rows": 11938,
     "timestamp": "2026-02-27T20:44:03.285187+00:00",
     "status": "complete"
+  },
+  {
+    "source": "census_zbp",
+    "file": "/Volumes/T9/Projects/ Guadalupe River Synthetic Controls Recovery/data/raw/census_zbp/zbp_tx_zips.parquet",
+    "rows": 64502,
+    "timestamp": "2026-03-01T20:42:15.154513+00:00",
+    "status": "complete"
   }
 ]

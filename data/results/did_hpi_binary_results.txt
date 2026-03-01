@@ -1,0 +1,52 @@
+=== ZIP-Level HPI DiD Results ===
+
+--- Binary DiD: log(HPI) ~ treated:post | zip + year FE ---
+OLS estimation, Dep. Var.: ln_hpi
+Observations: 389 
+Fixed-effects: zip: 12,  year: 35
+Standard-errors: Clustered (zip) 
+             Estimate Std. Error t value Pr(>|t|) 
+treated:post 0.010281   0.033068  0.3109  0.76169 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 0.055015     Adj. R2: 0.980051
+                 Within R2: 0.001134
+
+--- Intensity DiD: log(HPI) ~ intensity:post | zip + year FE ---
+OLS estimation, Dep. Var.: ln_hpi
+Observations: 389 
+Fixed-effects: zip: 12,  year: 35
+Standard-errors: Clustered (zip) 
+                Estimate Std. Error   t value Pr(>|t|) 
+intensity:post -0.000153   0.003064 -0.050005  0.96101 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 0.055045     Adj. R2: 0.980029
+                 Within R2: 5.951e-5
+
+
+=== Census Tract-Level HPI DiD Results ===
+
+--- Binary DiD: log(HPI) ~ treated:post | tract + year FE ---
+OLS estimation, Dep. Var.: ln_hpi
+Observations: 1,016 
+Fixed-effects: tract: 32,  year: 42
+Standard-errors: Clustered (tract) 
+             Estimate Std. Error  t value Pr(>|t|) 
+treated:post 0.000658   0.014164 0.046465  0.96324 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 0.054288     Adj. R2: 0.980789
+                 Within R2: 1.304e-6
+
+--- Intensity DiD: log(HPI) ~ intensity:post | tract + year FE ---
+OLS estimation, Dep. Var.: ln_hpi
+Observations: 1,016 
+Fixed-effects: tract: 32,  year: 42
+Standard-errors: Clustered (tract) 
+                Estimate Std. Error  t value Pr(>|t|)    
+intensity:post -0.004058   0.002299 -1.76511 0.087396 .  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 0.053745     Adj. R2: 0.981172
+                 Within R2: 0.019904

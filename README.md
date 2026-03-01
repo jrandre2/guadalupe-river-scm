@@ -46,25 +46,68 @@ The pipeline produces a merged **SCM panel** at `data/processed/panels/scm_panel
 - All nominal dollar values deflated to constant **2020 dollars** using CPI-U
 - **171 donor-eligible counties** after excluding flood-affected areas
 
+## Analysis Results
+
+### County-Level SCM (R/01 + R/02)
+
+The Synthetic Control Method estimated against real per capita income (1990--2022) with a screened donor pool:
+
+- **Pre-treatment RMSPE:** $660 (1.68% of pre-treatment mean) — excellent fit
+- **Gap series:** Comal dropped $2,685 below its synthetic counterpart in 1999, recovered by 2001, and outperformed thereafter (average post-treatment gap = +$3,845)
+- **Top donors:** Rockwall County (50%), Lampasas (24%), Orange (7%)
+- **Permutation p-value: 0.471** — not statistically significant. Comal's post-flood trajectory is not unusual among fast-growing TX counties. Growth-matched donor pool (31 counties) yielded p = 0.625.
+
+### Within-County DiD: ZIP-Level Business Activity (R/03)
+
+To gain sharper identification, a difference-in-differences at the ZIP code level exploits geographic variation in flood damage using Census ZIP Code Business Patterns (1994--2020) and NFIP claims data.
+
+- **Treatment:** 4 ZIPs with >$500K in NFIP payouts (78130 NB Downtown: $17M, 78132, 78163, 78131)
+- **Control:** 9 ZIPs with minimal damage (3 Comal + 6 adjacent county)
+- **Binary DiD (establishments):** coef = -0.524, p = 0.202
+- **Event study:** Pre-trends slope downward, suggesting convergence rather than flood effect. Confidence intervals include zero throughout.
+
+### Housing Value Analysis (R/04)
+
+Adapted the donor-based counterfactual methodology from the Longitudinal Housing Recovery project (Hurricane Sandy) using FHFA House Price Index at ZIP and census tract level.
+
+- **ZIP DiD:** coef = +0.010, p = 0.762 — no significant effect on housing values
+- **Tract intensity DiD:** coef = -0.004, p = 0.087 — marginally significant
+- **Donor-counterfactual recovery timing:** 78130 recovered in 1 year, 78132 in 2 years, 78163 in 6 years (median: 2 years)
+- **Event study:** Pre-trends flat (validating parallel trends). Post-treatment gaps within ±5%.
+
+### Interpretation
+
+The 1998 Guadalupe River flood caused clear short-term physical damage ($22.5M in NFIP payouts to Comal County) and a brief economic dip visible at both county and ZIP level. However, no analysis — county SCM, ZIP-level DiD on establishments/employment/payroll, or housing price DiD — finds a statistically significant long-run effect. The housing market recovered within 1--6 years (median 2). This is consistent with the disaster economics literature finding that localized natural disasters in growing economies produce transitory economic effects, particularly when underlying demand drivers (I-35 corridor growth) remain intact.
+
 ## Project Structure
 
 ```
 config/
-  project.yaml          # Treated unit, study period, disaster declaration
-  sources.yaml          # Per-source endpoint configuration
+  project.yaml            # Treated unit, study period, disaster declaration
+  sources.yaml            # Per-source endpoint configuration
 src/
-  pipeline.py           # DAG orchestrator for data acquisition
-  config.py             # YAML + .env loader
-  acquire/              # 21 data source modules
+  pipeline.py             # DAG orchestrator for data acquisition
+  config.py               # YAML + .env loader
+  acquire/                # 22 data source modules (incl. census_zbp.py)
   process/
-    harmonize_county.py # Standardize all datasets to county-year panels
-    deflator.py         # CPI-U deflator (constant 2020 dollars)
-    panel_builder.py    # Merge harmonized data into final SCM panel
-  utils/                # Shared I/O, HTTP, API helpers
+    harmonize_county.py   # Standardize all datasets to county-year panels
+    deflator.py           # CPI-U deflator (constant 2020 dollars)
+    panel_builder.py      # Merge harmonized data into final SCM panel
+  utils/                  # Shared I/O, HTTP, API helpers
+notebooks/
+  01_panel_diagnostics.ipynb  # Coverage heatmaps, pre-treatment trends, balance table
+  02_donor_screening.ipynb    # Donor pool screening (171 → 69 → 31 growth-matched)
+  03_did_zbp_analysis.ipynb   # ZIP-level DiD panel build (ZBP + NFIP crosswalk)
+  04_housing_hpi_analysis.ipynb # Housing HPI analysis (donor counterfactual)
+R/
+  01_scm_estimate.R       # tidysynth SCM estimation
+  02_placebo_tests.R      # In-space, leave-one-out, in-time placebos
+  03_did_zbp.R            # ZIP-level DiD on establishments/employment/payroll
+  04_did_hpi.R            # Housing value DiD at ZIP and census tract level
 data/
-  raw/                  # Downloaded data (gitignored)
-  processed/            # Harmonized panels + merged SCM panel (gitignored)
-R/                      # SCM estimation scripts (forthcoming)
+  raw/                    # Downloaded data (gitignored)
+  processed/              # Harmonized panels + merged SCM panel (gitignored)
+  results/                # SCM outputs, DiD results, figures
 ```
 
 ## Setup

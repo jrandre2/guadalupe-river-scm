@@ -1,0 +1,37 @@
+=== Binary DiD: Treated × Post | ZIP + Year FE ===
+
+--- log(Establishments) ---
+OLS estimation, Dep. Var.: ln_estab
+Observations: 351 
+Fixed-effects: zip: 13,  year: 27
+Standard-errors: Clustered (zip) 
+             Estimate Std. Error  t value Pr(>|t|) 
+treated:post -0.52358   0.387827 -1.35004  0.20192 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 0.263238     Adj. R2: 0.912483
+                 Within R2: 0.112814
+
+--- log(Employment) ---
+OLS estimation, Dep. Var.: ln_emp
+Observations: 351 
+Fixed-effects: zip: 13,  year: 27
+Standard-errors: Clustered (zip) 
+              Estimate Std. Error   t value Pr(>|t|) 
+treated:post -0.021375   0.644092 -0.033187  0.97407 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 0.685502     Adj. R2: 0.674421
+                 Within R2: 3.125e-5
+
+--- log(Payroll, real 2020$) ---
+OLS estimation, Dep. Var.: ln_payann_real
+Observations: 351 
+Fixed-effects: zip: 13,  year: 27
+Standard-errors: Clustered (zip) 
+             Estimate Std. Error  t value Pr(>|t|) 
+treated:post 0.586294   0.983455 0.596158  0.56215 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 1.05925     Adj. R2: 0.47629 
+                Within R2: 0.009751
