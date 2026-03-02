@@ -1,6 +1,20 @@
-"""Fetch FEMA Individual Assistance data for DR-1257-TX.
+"""Fetch FEMA Individual Assistance (IA) registrant data for DR-1257-TX.
 
-Note: IA data for pre-2004 disasters may be incomplete in OpenFEMA.
+Individual Assistance provides direct aid to households — housing assistance,
+other needs assistance, and crisis counseling — following a presidentially
+declared disaster. This dataset captures the scale of household-level impact
+from the 1998 Guadalupe River flood in Comal County.
+
+Data source: OpenFEMA v2, IndividualAssistanceHousingRegistrantsLargeDisasters
+Endpoint filtered to disasterNumber == 1257 (DR-1257-TX, October 1998 flood).
+
+Key variables (when available): applicant count, damage amount, zip code,
+county, program type (housing vs. other needs assistance).
+
+Coverage note: OpenFEMA's IA registrant dataset has limited pre-2004 coverage.
+DR-1257 data may be absent or incomplete. If empty, a placeholder is saved
+and a warning is logged. Fallback: FEMA disaster summary pages provide
+aggregate totals not captured here.
 """
 
 from __future__ import annotations

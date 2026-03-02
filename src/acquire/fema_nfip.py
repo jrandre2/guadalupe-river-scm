@@ -1,4 +1,24 @@
-"""Fetch FEMA NFIP (National Flood Insurance Program) claims for Texas."""
+"""Fetch FEMA NFIP (National Flood Insurance Program) claims for Texas.
+
+NFIP claims data provides dollar amounts paid to policyholders for flood
+damage, aggregated by ZIP code. This is the **primary source for DiD treatment
+assignment**: ZIPs with >$500K in 1998 NFIP payouts are classified as treated
+in R/03 (ZBP DiD) and R/04 (HPI DiD).
+
+Data source: OpenFEMA v2, FimaNfipClaims
+Two downloads:
+  1. 1998 claims only (Texas): nfip_tx_1998.parquet — used for treatment assignment
+  2. Broader 1995–2005 window (Texas): nfip_tx_1990_2005.parquet — provides
+     context on pre- and post-event claim activity for Comal and donor ZIPs
+
+Key variables: reportedCity, reportedZip, amountPaidOnBuildingClaim,
+amountPaidOnContentsClaim, yearOfLoss, countyCode.
+
+Coverage note: NFIP claims are reported at the transaction level. Aggregate
+ZIP-level payouts must be computed post-download (see notebooks/03).
+Pre-1978 claims are generally not available. Policyholder identity is masked
+(only 5-digit ZIP and county retained in the public dataset).
+"""
 
 from __future__ import annotations
 

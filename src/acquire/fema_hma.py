@@ -1,4 +1,20 @@
-"""Fetch FEMA Hazard Mitigation Assistance projects for Texas."""
+"""Fetch FEMA Hazard Mitigation Assistance (HMA) project data for Texas.
+
+Hazard Mitigation Assistance funds local projects that reduce future disaster
+risk — home elevations, buyouts, storm drainage improvements, etc. For this
+study, HMA data serves as a supplemental indicator of recovery investment and
+mitigation activity in the years following the 1998 Guadalupe River flood.
+
+Data source: OpenFEMA v4, HazardMitigationAssistanceProjects
+Filtered to Texas statewide (all disasters, all years).
+
+Key variables: project type, award amount, county, disaster number,
+project status, fiscal year. Filter to disasterNumber == 1257 after download
+to isolate DR-1257-TX mitigation grants.
+
+Coverage: All HMA programs (HMGP, BRIC, FMA) statewide; coverage back to
+early 1990s but most complete from 2000 onward.
+"""
 
 from __future__ import annotations
 

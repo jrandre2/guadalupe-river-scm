@@ -1,0 +1,51 @@
+=== Augmented SCM (Ridge) — Ben-Michael, Feller, Rothstein 2021 ===
+
+Treated unit: 48091 (Comal County, TX)
+Outcome: per_capita_income_real
+Pre-treatment: 1990–1998
+Post-treatment: 1999–2022
+Donor pool: 31 counties
+
+--- Average Treatment Effect on the Treated (ATT) ---
+  Estimate:  $6248
+  p-value:   0.1070 (permutation-based)
+  95%% CI:    not available (see individual year CIs)
+
+
+Call:
+single_augsynth(form = form, unit = !!enquo(unit), time = !!enquo(time), 
+    t_int = t_int, data = data, progfunc = "Ridge", scm = TRUE)
+
+Average ATT Estimate (p Value for Joint Null):  6248   ( 0.11 )
+L2 Imbalance: 1491.863
+Percent improvement from uniform weights: 92.1%
+
+Avg Estimated Bias: -24.955
+
+Inference type: Conformal inference
+
+ Time Estimate 95% CI Lower Bound 95% CI Upper Bound p Value
+ 1999 -802.511         -14542.877           12937.85   0.806
+ 2000  559.943         -13180.423           14300.31   0.902
+ 2001 2003.614         -11736.753           15743.98   0.801
+ 2002 3213.774         -10526.593           16954.14   0.670
+ 2003 3633.887         -10106.479           17374.25   0.707
+ 2004 3827.421          -9912.945           17567.79   0.610
+ 2005 5741.603          -7998.763           19481.97   0.804
+ 2006 5692.408          -8047.959           19432.77   0.691
+ 2007 6666.371          -7073.995           20406.74   0.606
+ 2008 5970.304          -7770.062           19710.67   1.000
+ 2009 5738.912          -8001.455           19479.28   0.785
+ 2010 5650.259          -8090.107           19390.62   0.681
+ 2011 6479.309          -7261.057           20219.67   1.000
+ 2012 7306.689          -6433.677           21047.06   1.000
+ 2013 8667.390          -5072.976           22407.76   1.000
+ 2014 9030.091          -4710.276           22770.46   1.000
+ 2015 8290.962          -5449.404           22031.33   0.885
+ 2016 8587.628          -5152.738           22327.99   0.809
+ 2017 8677.071          -5063.295           22417.44   0.889
+ 2018 9608.021          -4132.345           23348.39   1.000
+ 2019 8382.570          -5357.797           22122.94   1.000
+ 2020 7490.598          -6249.768           21230.97   0.880
+ 2021 9894.702          -3845.664           23635.07   0.898
+ 2022 9638.786          -4101.580           23379.15   0.907

@@ -40,6 +40,7 @@ class RateLimiter:
         self._last_call: float = 0.0
 
     def wait(self) -> None:
+        """Block until min_delay seconds have elapsed since the last call."""
         elapsed = time.monotonic() - self._last_call
         if elapsed < self.min_delay:
             time.sleep(self.min_delay - elapsed)

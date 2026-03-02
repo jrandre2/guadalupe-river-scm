@@ -1,7 +1,25 @@
-"""HUD CDBG-DR data acquisition.
+"""HUD Community Development Block Grant – Disaster Recovery (CDBG-DR) data.
 
-This is a manual download source — the DRGR portal requires interactive
-navigation. The 1998 flood may predate the DRGR system.
+CDBG-DR provides flexible federal grants to help communities recover from
+presidentially declared disasters, covering housing rehabilitation, economic
+revitalization, and infrastructure repair. For the 1998 Guadalupe River flood,
+any CDBG-DR allocation to Texas would represent supplemental recovery funding
+beyond FEMA's direct assistance programs.
+
+Data source: HUD Disaster Recovery Grants Reporting (DRGR) public portal
+  URL: https://drgr.hud.gov/public/
+
+Status: MANUAL DOWNLOAD REQUIRED. The DRGR system requires interactive
+navigation and was not fully operational for pre-2004 disasters. DR-1257-TX
+(1998) may predate DRGR records entirely.
+
+Fallback options (in order of preference):
+  1. HUD Exchange CDBG-DR reports: https://www.hudexchange.info/programs/cdbg-dr/reports/
+  2. USAspending.gov — search for HUD disaster grants to Texas, 1998–2002
+  3. Texas GLO (General Land Office) — administered CDBG-DR for Texas disasters
+
+This `run()` function logs instructions and exits; it does not download data.
+Place any manually acquired files in data/raw/hud_cdbgdr/.
 """
 
 from __future__ import annotations

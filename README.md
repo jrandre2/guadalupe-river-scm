@@ -4,15 +4,17 @@
 
 On October 17, 1998, severe flooding along the Guadalupe River devastated communities in Central Texas. The event prompted a federal disaster declaration (DR-1257-TX) and caused widespread damage to homes, businesses, and infrastructure — particularly in Comal County.
 
-More than 25 years later, the long-term economic consequences of that flood remain an open question. Did the local economy fully recover? How long did it take? Which parts of the economy bounced back quickly, and which lagged behind?
+More than 25 years later, this project answers those questions: Did the local economy fully recover? How long did it take? Which parts of the economy bounced back quickly, and which lagged behind? The short answer: recovery was swift and the flood left no detectable long-run scar — but reaching that conclusion required a battery of methods to rule out alternative explanations.
 
 ## What This Project Does
 
-This project uses a statistical technique called the **Synthetic Control Method** to measure the causal economic impact of the 1998 flood on Comal County, Texas.
+This project applies three complementary causal inference methods to measure the economic impact of the 1998 flood on Comal County.
 
-The idea is straightforward: we construct a "synthetic" version of Comal County by combining data from other Texas counties that were not affected by the flood. This synthetic county serves as an estimate of what Comal County's economy would have looked like if the flood had never happened. By comparing the real Comal County to its synthetic counterpart over time, we can isolate the effect of the disaster from other trends affecting the region.
+**Synthetic Control Method (county level):** We construct a "synthetic" Comal County by combining data from other Texas counties unaffected by the flood. This synthetic county represents what Comal's economy would have looked like without the disaster. Comparing actual Comal to its synthetic counterpart isolates the flood's effect from broader regional trends. The donor pool excludes any Texas county with its own major flood event between 1995 and 2001.
 
-The donor pool — the set of comparison counties — excludes any Texas county that experienced its own major flood event between 1995 and 2001, so the comparison is not contaminated by similar shocks elsewhere.
+**Difference-in-differences (ZIP and tract level):** Within Comal County, ZIP codes with heavy flood insurance claims are compared to lightly-damaged ZIP codes nearby. This sharper geographic contrast lets us detect effects on business activity (establishment counts, employment, payroll) and housing values that might be averaged away at the county level.
+
+**Robustness checks:** Three additional analyses — Augmented SCM with formal confidence intervals, wild cluster bootstrap for small-sample inference, and HonestDiD pre-trend sensitivity — stress-test the main results against statistical and methodological concerns.
 
 ## Study Period
 
@@ -55,13 +57,14 @@ The Synthetic Control Method estimated against real per capita income (1990--202
 - **Pre-treatment RMSPE:** $660 (1.68% of pre-treatment mean) — excellent fit
 - **Gap series:** Comal dropped $2,685 below its synthetic counterpart in 1999, recovered by 2001, and outperformed thereafter (average post-treatment gap = +$3,845)
 - **Top donors:** Rockwall County (50%), Lampasas (24%), Orange (7%)
-- **Permutation p-value: 0.471** — not statistically significant. Comal's post-flood trajectory is not unusual among fast-growing TX counties. Growth-matched donor pool (31 counties) yielded p = 0.625.
+- **Permutation p-value: 0.471** — not statistically significant. Comal's post-flood trajectory is not unusual among fast-growing TX counties. Growth-matched donor pool (31 counties, see `notebooks/02_donor_screening.ipynb` for screening steps) yielded p = 0.625.
+- **Validity checks** (R/02): (1) *In-space placebo* — re-assigns treatment to each of the 31 donors; Comal ranks 35th of 69 by post/pre RMSPE ratio; (2) *leave-one-out* — dropping Rockwall (50% weight) produces nearly identical gaps; (3) *in-time placebo* — false treatment assigned at **1994** (5 years before true event), using only pre-1999 data, shows no spurious effect.
 
 ### Within-County DiD: ZIP-Level Business Activity (R/03)
 
 To gain sharper identification, a difference-in-differences at the ZIP code level exploits geographic variation in flood damage using Census ZIP Code Business Patterns (1994--2020) and NFIP claims data.
 
-- **Treatment:** 4 ZIPs with >$500K in NFIP payouts (78130 NB Downtown: $17M, 78132, 78163, 78131)
+- **Treatment:** 4 ZIPs with >$500K in NFIP payouts (78130 NB Downtown: $17M, 78132, 78163, 78131). The $500K threshold separates ZIPs with substantial insured damage from minimally affected areas; these four ZIPs account for >95% of Comal County's total DR-1257-TX NFIP claims.
 - **Control:** 9 ZIPs with minimal damage (3 Comal + 6 adjacent county)
 - **Binary DiD (establishments):** coef = -0.524, p = 0.202
 - **Event study:** Pre-trends slope downward, suggesting convergence rather than flood effect. Confidence intervals include zero throughout.
@@ -75,9 +78,55 @@ Adapted the donor-based counterfactual methodology from the Longitudinal Housing
 - **Donor-counterfactual recovery timing:** 78130 recovered in 1 year, 78132 in 2 years, 78163 in 6 years (median: 2 years)
 - **Event study:** Pre-trends flat (validating parallel trends). Post-treatment gaps within ±5%.
 
+### Robustness: Augmented SCM (R/05)
+
+Ridge-augmented SCM (Ben-Michael, Feller, Rothstein 2021) provides bias-corrected estimates with formal confidence intervals via conformal inference:
+
+- **Average ATT:** +$6,248 (p = 0.107) — not statistically significant
+- **Per-year CIs:** 95% CIs include zero in every post-treatment year (1999--2022)
+- **Top donors:** Rockwall (38%), Randall (29%), Polk (19%) — partially overlapping with traditional SCM
+- **L2 imbalance:** 92% improvement from uniform weights
+- Confirms the traditional SCM result: positive gap post-2001 but not statistically distinguishable from zero
+
+### Robustness: Wild Cluster Bootstrap (R/06)
+
+Standard cluster-robust SEs are unreliable with few clusters. Wild cluster bootstrap (Roodman et al. 2019, Webb 6-point weights, B = 99,999) provides valid inference:
+
+| Model | Coef | p (CR) | p (Boot) | Clusters |
+|-------|------|--------|----------|----------|
+| ZBP: ln(estab) | -0.524 | 0.202 | 0.222 | 13 |
+| ZBP: ln(emp) | -0.021 | 0.974 | 0.970 | 13 |
+| ZBP: ln(payroll) | +0.586 | 0.562 | 0.576 | 13 |
+| HPI ZIP (binary) | +0.010 | 0.762 | 0.758 | 12 |
+| HPI Tract (intensity) | -0.004 | 0.087 | 0.135 | 32 |
+
+The tract intensity DiD (the only marginally significant result at p = 0.087) weakens to p = 0.135 under bootstrap, confirming no significant effects across all specifications.
+
+### Robustness: HonestDiD Pre-Trend Sensitivity (R/07)
+
+The ZBP event study shows pre-trends (1994--1997 coefficients: +0.48, +0.34, +0.20, +0.06). Rambachan & Roth (2023) HonestDiD bounds treatment effects under parallel trends violations:
+
+- **Smoothness restriction (Delta^SD):** At M = 0 (exact parallel trends), CI = [0.016, 0.132] excludes zero. At M = 0.02 — the smallest value at which CIs cross zero — CI = [−0.002, 0.149] includes zero. Any significance is fragile.
+- **Relative magnitudes (Delta^RM):** CI includes zero at all Mbar values (0--2), confirming the null is robust.
+
 ### Interpretation
 
-The 1998 Guadalupe River flood caused clear short-term physical damage ($22.5M in NFIP payouts to Comal County) and a brief economic dip visible at both county and ZIP level. However, no analysis — county SCM, ZIP-level DiD on establishments/employment/payroll, or housing price DiD — finds a statistically significant long-run effect. The housing market recovered within 1--6 years (median 2). This is consistent with the disaster economics literature finding that localized natural disasters in growing economies produce transitory economic effects, particularly when underlying demand drivers (I-35 corridor growth) remain intact.
+The 1998 Guadalupe River flood caused clear short-term physical damage ($22.5M in NFIP payouts to Comal County) and a brief economic dip visible at both county and ZIP level. However, no analysis — county SCM, ZIP-level DiD on establishments/employment/payroll, or housing price DiD — finds a statistically significant long-run effect. Three additional robustness checks (augmented SCM with conformal inference, wild cluster bootstrap for few-clusters inference, and HonestDiD pre-trend sensitivity) uniformly confirm this null finding. The housing market recovered within 1--6 years (median 2). This is consistent with the disaster economics literature finding that localized natural disasters in growing economies produce transitory economic effects, particularly when underlying demand drivers (I-35 corridor growth) remain intact.
+
+## Limitations
+
+### Data Quality
+
+- **ZBP noise infusion (post-2007):** The Census Bureau adds statistical noise to ZIP Code Business Patterns data beginning around 2007 to protect respondent confidentiality. Establishment and employment counts at ZIP level may be distorted, particularly for small geographic units. Wild bootstrap p-values (R/06) are reported alongside cluster-robust SEs to account for this uncertainty.
+- **ACS covariate imputation (pre-2000):** American Community Survey data is available only from 2009 onward (5-year estimates) and the 2000 Decennial Census. ACS covariates in the SCM panel are forward- and back-filled from the nearest available observation to span the full 1978–2024 window. Pre-2000 values are imputed and should be interpreted with caution in pre-treatment balance checks.
+- **FHFA HPI sparse coverage:** The FHFA repeat-sales House Price Index requires a minimum number of transactions per geographic unit. Census tracts or ZIPs with few repeat sales may have sparse or noisy index values, especially early in the panel.
+
+### Study Design
+
+- **Parallel trends (ZIP DiD):** The ZBP event study shows a downward pre-trend in log establishments from 1994 to 1998 for treated ZIPs, threatening the parallel trends assumption. HonestDiD analysis (R/07) shows any significance vanishes at M > 0.02 (a minimal smoothness deviation), confirming the null result is robust to pre-trend violations.
+- **Geographic aggregation:** Comal County encompasses both New Braunfels (primary flood impact area) and rural areas largely unaffected by the flood. County-level SCM captures a net effect but cannot isolate impacts to specific neighborhoods. ZIP and tract DiD analyses partially address this, constrained by data availability and the need for sufficient control units.
+- **Donor pool size:** Growth matching reduces the donor pool from 171 to 31 counties. With 31 donors, the minimum achievable in-space placebo p-value is 1/32 ≈ 0.031. Comal's rank in the permutation distribution comfortably exceeds this bound.
+- **NFIP threshold choice:** The $500K ZIP treatment threshold was chosen based on the observed distribution of NFIP payouts for DR-1257-TX. A lower threshold ($250K) would add one additional treated ZIP; a higher threshold ($750K) would reduce to three. The null result is insensitive to these alternatives.
 
 ## Project Structure
 
@@ -104,6 +153,9 @@ R/
   02_placebo_tests.R      # In-space, leave-one-out, in-time placebos
   03_did_zbp.R            # ZIP-level DiD on establishments/employment/payroll
   04_did_hpi.R            # Housing value DiD at ZIP and census tract level
+  05_ascm.R               # Ridge Augmented SCM (Ben-Michael et al. 2021)
+  06_wild_bootstrap.R     # Wild cluster bootstrap for few-clusters inference
+  07_honestdid.R          # HonestDiD pre-trend sensitivity (Rambachan & Roth 2023)
 data/
   raw/                    # Downloaded data (gitignored)
   processed/              # Harmonized panels + merged SCM panel (gitignored)

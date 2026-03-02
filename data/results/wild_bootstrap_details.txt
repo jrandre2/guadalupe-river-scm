@@ -1,0 +1,122 @@
+=== Wild Cluster Bootstrap Inference (Webb 6-point weights) ===
+B = 99999 bootstrap replications
+Method: Roodman, Nielsen, MacKinnon & Webb (2019)
+
+--- ZBP DiD: Establishments ---
+boottest.lm(object = fit, param = param_name, B = B, clustid = cluster_var, 
+    type = "webb")
+	
+ Hypothesis: 1*treated:post = 0
+ Observations: 351
+  Bootstr. Type: webb
+ Clustering: 1-way
+ Confidence Sets: 95%
+ Number of Clusters: 13
+ 
+                term estimate statistic p.value conf.low conf.high
+1 1*treated:post = 0   -0.524    -1.325   0.222   -1.783     0.179
+
+--- ZBP DiD: Employment ---
+boottest.lm(object = fit, param = param_name, B = B, clustid = cluster_var, 
+    type = "webb")
+	
+ Hypothesis: 1*treated:post = 0
+ Observations: 351
+  Bootstr. Type: webb
+ Clustering: 1-way
+ Confidence Sets: 95%
+ Number of Clusters: 13
+ 
+                term estimate statistic p.value conf.low conf.high
+1 1*treated:post = 0   -0.021    -0.033    0.97   -2.064     1.377
+
+--- ZBP DiD: Payroll ---
+boottest.lm(object = fit, param = param_name, B = B, clustid = cluster_var, 
+    type = "webb")
+	
+ Hypothesis: 1*treated:post = 0
+ Observations: 351
+  Bootstr. Type: webb
+ Clustering: 1-way
+ Confidence Sets: 95%
+ Number of Clusters: 13
+ 
+                term estimate statistic p.value conf.low conf.high
+1 1*treated:post = 0    0.586     0.585   0.576   -1.724     3.686
+
+--- HPI DiD (ZIP): Binary ---
+boottest.lm(object = fit, param = param_name, B = B, clustid = cluster_var, 
+    type = "webb")
+	
+ Hypothesis: 1*treated:post = 0
+ Observations: 389
+  Bootstr. Type: webb
+ Clustering: 1-way
+ Confidence Sets: 95%
+ Number of Clusters: 12
+ 
+                term estimate statistic p.value conf.low conf.high
+1 1*treated:post = 0     0.01     0.306   0.758   -0.097      0.11
+
+--- HPI DiD (ZIP): Intensity ---
+boottest.lm(object = fit, param = param_name, B = B, clustid = cluster_var, 
+    type = "webb")
+	
+ Hypothesis: 1*intensity:post = 0
+ Observations: 389
+  Bootstr. Type: webb
+ Clustering: 1-way
+ Confidence Sets: 95%
+ Number of Clusters: 12
+ 
+                  term estimate statistic p.value conf.low conf.high
+1 1*intensity:post = 0        0    -0.049   0.964   -0.007     0.008
+
+--- HPI DiD (Tract): Binary ---
+boottest.lm(object = fit, param = param_name, B = B, clustid = cluster_var, 
+    type = "webb")
+	
+ Hypothesis: 1*treated:post = 0
+ Observations: 1016
+  Bootstr. Type: webb
+ Clustering: 1-way
+ Confidence Sets: 95%
+ Number of Clusters: 32
+ 
+                term estimate statistic p.value conf.low conf.high
+1 1*treated:post = 0    0.001     0.046   0.964       NA        NA
+
+--- HPI DiD (Tract): Intensity ---
+boottest.lm(object = fit, param = param_name, B = B, clustid = cluster_var, 
+    type = "webb")
+	
+ Hypothesis: 1*intensity:post = 0
+ Observations: 1016
+  Bootstr. Type: webb
+ Clustering: 1-way
+ Confidence Sets: 95%
+ Number of Clusters: 32
+ 
+                  term estimate statistic p.value conf.low conf.high
+1 1*intensity:post = 0   -0.004    -1.737   0.135    -0.01     0.001
+
+
+=== Summary: Standard CR vs Wild Bootstrap P-Values ===
+
+Model                                     Coef      p(CR)    p(Boot)   Clusters
+-------------------------------------------------------------------------------- 
+ZBP DiD ln_estab                       -0.5236     0.2019     0.2219         13
+ZBP DiD ln_emp                         -0.0214     0.9741     0.9701         13
+ZBP DiD ln_payann_real                  0.5863     0.5621     0.5763         13
+HPI DiD (ZIP) ln_hpi (binary)           0.0103     0.7617     0.7580         12
+HPI DiD (ZIP) ln_hpi (intensity)       -0.0002     0.9610     0.9643         12
+HPI DiD (Tract) ln_hpi (binary)         0.0007     0.9632     0.9644         32
+HPI DiD (Tract) ln_hpi (intensity)     -0.0041     0.0874     0.1345         32
+
+
+Interpretation:
+Wild cluster bootstrap p-values are more reliable than standard CR p-values
+when the number of clusters is small (<20). Webb 6-point weights are
+recommended when fewer than ~10 clusters exist in the treated group.
+If p(Boot) > 0.05, the null of no treatment effect cannot be rejected
+even with proper few-cluster inference.

@@ -96,14 +96,20 @@ def build_panel() -> pd.DataFrame:
             log.debug("panel_merged", source=name, cols_added=len(df.columns) - 2)
 
     # ── Merge covariates (ACS, many years missing pre-2009) ──────────
+    # ACS 5-year estimates are available 2009–2024; the 2000 Decennial provides
+    # one cross-section for 2000. Pre-2000 years have no direct ACS observation.
+    # Strategy: merge available observations, then forward-fill (2009+ → earlier)
+    # and back-fill (2000 Decennial → 1978–1999) within each county. This treats
+    # socioeconomic structure as slowly changing — reasonable for education and
+    # urbanization but less so for cyclically sensitive variables like poverty rate.
+    # Flag: imputed ACS values for pre-2000 years should be interpreted with caution.
     if acs is not None:
-        # For pre-ACS years, forward-fill from nearest available year
         panel = panel.merge(acs, on=["fips", "year"], how="left")
-        # Forward-fill covariates within each county
         covariate_cols = [c for c in acs.columns if c not in ["fips", "year"]]
         panel = panel.sort_values(["fips", "year"])
+        # Forward-fill: carry later observations backward toward 2000
         panel[covariate_cols] = panel.groupby("fips")[covariate_cols].ffill()
-        # Also back-fill for years before first ACS observation
+        # Back-fill: carry the earliest (2000 Decennial) observation back to 1978
         panel[covariate_cols] = panel.groupby("fips")[covariate_cols].bfill()
 
     # ── Merge donor eligibility ──────────────────────────────────────
@@ -117,6 +123,11 @@ def build_panel() -> pd.DataFrame:
         panel["is_treated"] = panel["fips"] == treated_fips
 
     # ── Deflate nominal dollar values ────────────────────────────────
+    # Source: BLS CPI-U All Items (FRED: CPIAUCSL), annual average.
+    # Base year: 2020 (deflator = 1.0 in 2020). All nominal dollar columns are
+    # multiplied by their year-specific deflator to produce constant 2020 dollar
+    # equivalents. Deflated columns are named with a "_real" suffix and retained
+    # alongside originals. See src/process/deflator.py for download/computation.
     nominal_cols = [
         "personal_income", "per_capita_income", "net_earnings",
         "transfer_receipts", "qcew_total_wages", "qcew_avg_weekly_wage",
@@ -134,11 +145,14 @@ def build_panel() -> pd.DataFrame:
             panel[real_col] = panel[col] * panel["year"].map(deflator_map)
 
     # ── Compute derived variables ────────────────────────────────────
-    # Net job creation rate (BDS)
+    # Net job creation rate (BDS): net_job_creation / total_employment
+    # Normalizes job flows by firm size; used as SCM predictor in R/01.
     if "net_job_creation" in panel.columns and "emp" in panel.columns:
         panel["net_job_creation_rate"] = panel["net_job_creation"] / panel["emp"]
 
-    # Employment-to-population ratio
+    # Employment-to-population ratio: LAUS employment / BEA population
+    # Captures labor market tightness; more stable than unemployment rate
+    # across small counties with volatile labor force participation.
     if "laus_employment" in panel.columns and "population" in panel.columns:
         panel["emp_pop_ratio"] = panel["laus_employment"] / panel["population"]
 

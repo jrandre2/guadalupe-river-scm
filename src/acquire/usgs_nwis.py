@@ -1,7 +1,26 @@
-"""Fetch USGS stream gauge data for the Guadalupe River basin.
+"""Fetch USGS National Water Information System (NWIS) stream gauge data.
 
-Uses the `dataretrieval` Python package for NWIS access.
-Key gauges near New Braunfels for characterizing the 1998 flood.
+Stream gauge records provide a physical proxy for flood severity — specifically,
+peak discharge (cubic feet per second) at key points along the Guadalupe River
+during the October 1998 event. This data contextualizes the flood's intensity
+relative to historical baselines and supports the narrative that the 1998 event
+was an unusually severe hydrologic event.
+
+Data source: USGS NWIS daily values API via `dataretrieval` Python package
+  Parameter: 00060 (stream discharge, mean daily, cubic feet per second)
+  Gauges: Configured in config/sources.yaml under usgs_nwis.gauges
+  Coverage: 1978–2025 (where available for each gauge)
+
+Key gauges (Guadalupe River system near New Braunfels / Comal County):
+  - 08168500: Guadalupe River at New Braunfels (primary flood gauge)
+  - 08169000: Comal River at New Braunfels (tributary)
+  Additional gauges may be listed in config/sources.yaml.
+
+Output: guadalupe_daily_discharge.parquet — daily discharge by gauge and date.
+Post-processing: Compute annual peak discharge and flood frequency metrics
+in notebooks for use as a physical flood severity covariate.
+
+Requires: `pip install dataretrieval`
 """
 
 from __future__ import annotations

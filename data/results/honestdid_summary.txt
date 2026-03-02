@@ -1,0 +1,58 @@
+=== HonestDiD Sensitivity Analysis (Rambachan & Roth 2023) ===
+
+Outcome: ln(establishments)
+Event study: ln_estab ~ i(year, treated, ref=1998) | zip + year
+Pre-treatment periods: 4 (1994, 1995, 1996, 1997)
+Post-treatment periods: 22 (1999–2020)
+Significance level: 0.05
+
+Pre-treatment coefficients (year: estimate):
+  1994: +0.4830 (SE=0.3029)
+  1995: +0.3378 (SE=0.2110)
+  1996: +0.1988 (SE=0.1531)
+  1997: +0.0561 (SE=0.0314)
+
+Max pre-treatment 2nd difference: 0.0062
+
+--- Smoothness Restriction (Delta^SD) ---
+M controls how much post-treatment trend can deviate from
+linear extrapolation of pre-trends.
+
+# A tibble: 9 × 5
+        lb    ub method Delta       M
+     <dbl> <dbl> <chr>  <chr>   <dbl>
+1  0.0162  0.132 FLCI   DeltaSD 0    
+2  0.0142  0.134 FLCI   DeltaSD 0.006
+3  0.0107  0.138 FLCI   DeltaSD 0.01 
+4  0.00851 0.140 FLCI   DeltaSD 0.012
+5 -0.00199 0.149 FLCI   DeltaSD 0.02 
+6 -0.0420  0.187 FLCI   DeltaSD 0.05 
+7 -0.105   0.247 FLCI   DeltaSD 0.1  
+8 -0.229   0.340 FLCI   DeltaSD 0.2  
+9 -0.529   0.640 FLCI   DeltaSD 0.5  
+
+--- Relative Magnitudes (Delta^RM) ---
+Mbar bounds the ratio of post-treatment trend violation
+to max pre-treatment trend violation.
+
+# A tibble: 9 × 5
+      lb    ub method Delta    Mbar
+   <dbl> <dbl> <chr>  <chr>   <dbl>
+1 -0.102 0.100 C-LF   DeltaRM  0   
+2 -0.183 0.160 C-LF   DeltaRM  0.25
+3 -0.268 0.243 C-LF   DeltaRM  0.5 
+4 -0.359 0.340 C-LF   DeltaRM  0.75
+5 -0.450 0.439 C-LF   DeltaRM  1   
+6 -0.543 0.539 C-LF   DeltaRM  1.25
+7 -0.636 0.640 C-LF   DeltaRM  1.5 
+8 -0.729 0.741 C-LF   DeltaRM  1.75
+9 -0.820 0.843 C-LF   DeltaRM  2   
+
+
+--- Interpretation ---
+If confidence sets include 0 even at M/Mbar > 0, the null of no
+treatment effect cannot be rejected even allowing for some degree
+of parallel trends violation. This strengthens the null finding.
+
+If confidence sets exclude 0 only at M/Mbar = 0 (exact parallel trends),
+any significance is fragile to even minor trends violations.
