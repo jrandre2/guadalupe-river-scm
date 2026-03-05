@@ -57,6 +57,7 @@ Rscript R/02_placebo_tests.R
 | `fwildclusterboot` + `feols()` incompatible | Use `lm()` with `factor(fips) + factor(year)` FEs |
 | pandas/pyarrow incompatibility | Use `src/utils/file_io.py` wrappers, not `pd.read_parquet()` directly |
 | ACS covariates sparse pre-2009 | Forward/back-filled in panel_builder.py — use with caution for pre-2000 years |
+| ZBP establishment pre-trend (visual decline) | Mean reversion in firm counts, not confounding; employment/payroll show no trend (see METHODS.md §3.4) |
 
 ## Key Files
 

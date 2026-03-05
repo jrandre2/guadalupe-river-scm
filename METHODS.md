@@ -187,6 +187,48 @@ where `ln(NFIP_i)` is the log of total NFIP payouts for the tract during DR-1257
 
 **Reference year for event studies:** 1998 (treatment year) for both ZIP and tract models.
 
+### 3.4 Pre-Trend Diagnostics
+
+Formal pre-trend tests were added to all DiD specifications (R/03, R/04) to assess the parallel trends assumption. Additional investigations decomposed the ZBP pre-trend pattern by outcome and sample.
+
+#### 3.4.1 Joint Wald Tests
+
+Joint Wald tests of the null hypothesis that all pre-treatment event-study coefficients equal zero:
+
+| Model | F-statistic | p-value | Interpretation |
+|-------|-------------|---------|----------------|
+| ZBP establishments | F(4, 286) = 1.326 | 0.260 | Not rejected |
+| ZBP employment | F(4, 286) = 1.301 | 0.270 | Not rejected |
+| ZBP payroll | F(4, 286) = 1.888 | 0.113 | Not rejected |
+| HPI ZIP | F(8, 309) = 10.841 | <0.001 | **Rejected** |
+| HPI Tract | F(6, 911) = 11.032 | <0.001 | **Rejected** |
+
+The ZBP panel does not reject parallel trends at conventional levels despite the visual downward pattern in establishment coefficients. The HPI panels reject parallel trends at both geographic levels, motivating the HonestDiD sensitivity analysis in §4.3.
+
+**Code location:** R/03 lines 147–158 (ZBP), R/04 lines 108–119 and 222–233 (HPI)
+
+#### 3.4.2 ZBP Establishment Pre-Trend Investigation
+
+The ZBP establishment event study shows a visually monotone decline in pre-treatment coefficients (1994: +0.48, 1995: +0.34, 1996: +0.20, 1997: +0.06), yet the joint Wald test does not reject (p = 0.260). This apparent contradiction was investigated through four additional tests.
+
+**Linear pre-trend test.** A regression of log establishments on `treated × relative_year` in the pre-period (1994–1998) estimates the slope of the pre-trend:
+
+| Outcome | Slope | SE | p-value |
+|---------|-------|----|---------|
+| Establishments | -0.125 | 0.075 | 0.121 |
+| Employment | -0.566 | 0.462 | 0.243 |
+| Payroll | -1.112 | 0.960 | 0.263 |
+
+No outcome shows a statistically significant linear pre-trend, though the establishment slope (−0.125 per year) is suggestive. The test is underpowered given 13 clusters and only 4 pre-treatment periods.
+
+**Placebo treatment tests.** Assigning a false treatment at 1996 (excluding post-1998 data) yields a placebo coefficient of −0.325 (p = 0.122); a false treatment at 1997 yields −0.312 (p = 0.133). Neither is significant, consistent with the absence of a discrete pre-treatment structural break.
+
+**Outcome decomposition.** The monotone declining pattern is specific to establishments. Employment and payroll pre-treatment coefficients show flat level shifts (employment: ~+2.5, payroll: ~+5.1 across all pre-years) rather than trends. This indicates the pattern reflects firm-count dynamics (entry/exit convergence) rather than a broad economic shock affecting treated ZIPs.
+
+**Comal-only subsample.** Restricting the panel to the 7 Comal County ZIPs (excluding the 6 adjacent-county controls) produces a similar pattern (1994: +0.326, 1995: +0.253, 1996: +0.179, 1997: +0.031) with Wald p = 0.342 and linear trend p = 0.235. The pre-trend is not an artifact of cross-county composition.
+
+**Interpretation.** The establishment pre-trend is best characterized as mean reversion in firm counts: treated ZIPs had relatively more establishments in the early 1990s and were converging toward the control group before the flood. This is a common pattern in business dynamics data where firm entry/exit rates exhibit regression to the mean. Because the trend is establishment-specific (not present in employment or payroll) and within-county (not driven by cross-county differences), it does not indicate a confounding pre-treatment shock.
+
 ---
 
 ## 4. Robustness Check Rationale

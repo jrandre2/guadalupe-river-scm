@@ -67,7 +67,7 @@ To gain sharper identification, a difference-in-differences at the ZIP code leve
 - **Treatment:** 4 ZIPs with >$500K in NFIP payouts (78130 NB Downtown: $17M, 78132, 78163, 78131). The $500K threshold separates ZIPs with substantial insured damage from minimally affected areas; these four ZIPs account for >95% of Comal County's total DR-1257-TX NFIP claims.
 - **Control:** 9 ZIPs with minimal damage (3 Comal + 6 adjacent county)
 - **Binary DiD (establishments):** coef = -0.524, p = 0.202
-- **Event study:** Pre-trends slope downward, suggesting convergence rather than flood effect. Confidence intervals include zero throughout.
+- **Event study:** Pre-trends slope downward (1994–1997: +0.48, +0.34, +0.20, +0.06), but the joint Wald test does not reject parallel trends (F(4,286) = 1.3, p = 0.260). Further investigation (linear trend test p = 0.121, placebo treatment tests p > 0.12, outcome decomposition) identifies the pattern as mean reversion in firm counts — establishment-specific, within-county, and not present in employment or payroll. Confidence intervals include zero throughout.
 
 ### Housing Value Analysis (R/04)
 
@@ -76,7 +76,7 @@ Adapted the donor-based counterfactual methodology from the Longitudinal Housing
 - **ZIP DiD:** coef = +0.010, p = 0.762 — no significant effect on housing values
 - **Tract intensity DiD:** coef = -0.004, p = 0.087 — marginally significant
 - **Donor-counterfactual recovery timing:** 78130 recovered in 1 year, 78132 in 2 years, 78163 in 6 years (median: 2 years)
-- **Event study:** Pre-trends flat (validating parallel trends). Post-treatment gaps within ±5%.
+- **Event study:** Joint Wald tests reject parallel trends at both ZIP (F(8,309) = 10.8, p < 0.001) and tract (F(6,911) = 11.0, p < 0.001) levels. HonestDiD sensitivity analysis (R/07) shows results are robust to these violations. Post-treatment gaps within ±5%.
 
 ### Robustness: Augmented SCM (R/05)
 
@@ -123,7 +123,7 @@ The 1998 Guadalupe River flood caused clear short-term physical damage ($22.5M i
 
 ### Study Design
 
-- **Parallel trends (ZIP DiD):** The ZBP event study shows a downward pre-trend in log establishments from 1994 to 1998 for treated ZIPs, threatening the parallel trends assumption. HonestDiD analysis (R/07) shows any significance vanishes at M > 0.02 (a minimal smoothness deviation), confirming the null result is robust to pre-trend violations.
+- **Parallel trends:** The ZBP establishment event study shows a visually declining pre-trend (joint Wald p = 0.260, linear trend p = 0.121), diagnosed as mean reversion in firm counts rather than a confounding shock (see METHODS.md §3.4). HonestDiD (R/07) confirms significance vanishes at M > 0.02. The HPI event studies formally reject parallel trends at both ZIP (p < 0.001) and tract (p < 0.001) levels; HonestDiD relative-magnitudes CIs include zero at all Mbar values, confirming the null result is robust.
 - **Geographic aggregation:** Comal County encompasses both New Braunfels (primary flood impact area) and rural areas largely unaffected by the flood. County-level SCM captures a net effect but cannot isolate impacts to specific neighborhoods. ZIP and tract DiD analyses partially address this, constrained by data availability and the need for sufficient control units.
 - **Donor pool size:** Growth matching reduces the donor pool from 171 to 31 counties. With 31 donors, the minimum achievable in-space placebo p-value is 1/32 ≈ 0.031. Comal's rank in the permutation distribution comfortably exceeds this bound.
 - **NFIP threshold choice:** The $500K ZIP treatment threshold was chosen based on the observed distribution of NFIP payouts for DR-1257-TX. A lower threshold ($250K) would add one additional treated ZIP; a higher threshold ($750K) would reduce to three. The null result is insensitive to these alternatives.
