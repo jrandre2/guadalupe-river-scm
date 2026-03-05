@@ -144,6 +144,19 @@ es_df <- bind_rows(es_df, ref_rows) |> arrange(outcome, year)
 write_csv(es_df, file.path(RESULTS_DIR, "did_event_study.csv"))
 message("Saved: did_event_study.csv")
 
+# Joint test of pre-treatment coefficients = 0 (parallel trends diagnostic)
+pre_coefs_estab <- grep("year::(199[4-7]|1998):", names(coef(es_estab)), value = TRUE)
+pre_coefs_estab <- setdiff(pre_coefs_estab, grep("1998", pre_coefs_estab, value = TRUE))
+if (length(pre_coefs_estab) > 0) {
+  pt_test <- wald(es_estab, pre_coefs_estab)
+  message(sprintf("\nJoint pre-trend test (H0: all pre-treatment coefficients = 0):"))
+  message(sprintf("  F(%d, %.0f) = %.3f, p = %.4f",
+                  pt_test$df1, pt_test$df2, pt_test$stat, pt_test$p))
+  if (pt_test$p < 0.10) {
+    message("  NOTE: Pre-trends may be violated. See R/07_honestdid.R for robust inference.")
+  }
+}
+
 # Print key coefficients
 message("\n--- Event Study: log(Establishments) ---")
 es_estab_sub <- es_df |> filter(outcome == "ln_estab") |> arrange(year)

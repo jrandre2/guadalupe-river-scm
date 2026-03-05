@@ -152,7 +152,7 @@ ln(Y_it) = α_i + λ_t + β(Treated_i × Post_t) + ε_it
 - Outcomes: log establishments (`ln_estab`), log employment (`ln_emp`), log payroll (`ln_payroll`)
 - FEs: ZIP (`α_i`) + year (`λ_t`)
 - Treatment dummy: 1 if ZIP in treated set AND year ≥ 1999
-- Event study: year-by-year interaction with 1997 as reference year
+- Event study: year-by-year interaction with 1998 as reference year
 - SEs: clustered by ZIP
 
 **Panel construction:** `notebooks/03_did_zbp_analysis.ipynb` (crosswalks NFIP claims to ZIPs, filters to Comal + adjacent, assigns treatment)
@@ -185,7 +185,7 @@ ln(HPI_it) = α_i + λ_t + γ(ln(NFIP_i) × Post_t) + ε_it
 ```
 where `ln(NFIP_i)` is the log of total NFIP payouts for the tract during DR-1257-TX.
 
-**Reference year for event studies:** 1997 (one year before treatment) for both ZIP and tract models.
+**Reference year for event studies:** 1998 (treatment year) for both ZIP and tract models.
 
 ---
 
@@ -216,7 +216,7 @@ where `ln(NFIP_i)` is the log of total NFIP payouts for the tract during DR-1257
 
 ### 4.3 HonestDiD Pre-Trend Sensitivity (R/07)
 
-**Why:** The ZBP event study shows a downward pre-trend in log establishments (1994–1997 coefficients: +0.48, +0.34, +0.20, +0.06), suggesting the parallel trends assumption may be violated. Standard DiD inference is invalid under non-parallel trends. HonestDiD provides confidence intervals that remain valid even if pre-trends are extrapolated into the post-period.
+**Why:** Joint Wald tests of pre-treatment event-study coefficients reject parallel trends for HPI at both ZIP (F(8,309) = 10.8, p < 0.001) and tract (F(6,911) = 11.0, p < 0.001) levels. The ZBP pre-trend test is not significant (F(4,286) = 1.3, p = 0.260), but the visual pattern of declining coefficients (1994–1997: +0.48, +0.34, +0.20, +0.06) still warrants sensitivity analysis. HonestDiD provides confidence intervals that remain valid even if pre-trends are extrapolated into the post-period.
 
 **Method:** Rambachan & Roth (2023, *Review of Economic Studies*). Two restrictions:
 

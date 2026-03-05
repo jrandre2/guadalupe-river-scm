@@ -109,6 +109,17 @@ ct$level <- "ZIP"
 write_csv(ct, file.path(RESULTS_DIR, "did_hpi_event_study.csv"))
 message("Saved: did_hpi_event_study.csv")
 
+# Joint test of pre-treatment coefficients = 0 (parallel trends diagnostic)
+pre_coefs_hpi <- names(coef(es_hpi))[grepl("year::", names(coef(es_hpi)))]
+pre_years_hpi <- as.integer(gsub(".*year::(-?\\d+):.*", "\\1", pre_coefs_hpi))
+pre_coefs_hpi <- pre_coefs_hpi[pre_years_hpi < REF_YEAR + 1]
+if (length(pre_coefs_hpi) > 0) {
+  pt_test_zip <- wald(es_hpi, pre_coefs_hpi)
+  message(sprintf("\nJoint pre-trend test (ZIP, H0: all pre-treatment coefficients = 0):"))
+  message(sprintf("  F(%d, %.0f) = %.3f, p = %.4f",
+                  pt_test_zip$df1, pt_test_zip$df2, pt_test_zip$stat, pt_test_zip$p))
+}
+
 # Print key years
 message("\nEvent study coefficients (ZIP-level):")
 for (i in seq_len(nrow(ct))) {
@@ -211,6 +222,20 @@ ct_tract$level <- "Tract"
 # Append to ZIP event study CSV
 es_both <- bind_rows(ct |> mutate(level = "ZIP"), ct_tract)
 write_csv(es_both, file.path(RESULTS_DIR, "did_hpi_event_study.csv"))
+
+# Joint test of pre-treatment coefficients = 0 (parallel trends diagnostic)
+pre_coefs_tract <- names(coef(es_tract))[grepl("year::", names(coef(es_tract)))]
+pre_years_tract <- as.integer(gsub(".*year::(-?\\d+):.*", "\\1", pre_coefs_tract))
+pre_coefs_tract <- pre_coefs_tract[pre_years_tract < REF_YEAR + 1]
+if (length(pre_coefs_tract) > 0) {
+  pt_test_tract <- wald(es_tract, pre_coefs_tract)
+  message(sprintf("\nJoint pre-trend test (tract, H0: all pre-treatment coefficients = 0):"))
+  message(sprintf("  F(%d, %.0f) = %.3f, p = %.4f",
+                  pt_test_tract$df1, pt_test_tract$df2, pt_test_tract$stat, pt_test_tract$p))
+  if (pt_test_tract$p < 0.10) {
+    message("  NOTE: Pre-trends may be violated. See R/07_honestdid.R for robust inference.")
+  }
+}
 
 # Print key years
 message("\nEvent study coefficients (tract-level):")

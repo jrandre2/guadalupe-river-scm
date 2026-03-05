@@ -17,7 +17,7 @@ study_period:
   pre_start: 1978
   pre_end: 1998
   post_start: 1999
-  post_end: 2025
+  post_end: 2025           # Aspirational; most sources available through 2024
 
 donor_pool:
   scope: "texas"

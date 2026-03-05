@@ -84,6 +84,11 @@ if (n_miss > 0) {
 # ── 2. Fit Ridge Augmented SCM ──────────────────────────────────────────────
 message("\nFitting Ridge Augmented SCM...")
 
+# Note: Unlike R/01 which hand-selects 6 predictor groups (sub-period income,
+# unemployment, employment-to-pop, wages, population growth), augsynth uses
+# ridge-regularized lagged outcomes as predictors by default. This is intentional:
+# ASCM's bias correction works through the outcome model, not covariate balance,
+# so lagged outcomes are sufficient (Ben-Michael, Feller, Rothstein 2021, §3.2).
 asyn <- augsynth(
   per_capita_income_real ~ trt,
   unit  = fips,
