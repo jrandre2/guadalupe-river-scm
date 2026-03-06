@@ -31,6 +31,7 @@ TASKS: dict[str, dict[str, Any]] = {
     "census_bps":        {"depends_on": [], "phase": 2, "module": "src.acquire.census_bps"},
     "irs_soi":           {"depends_on": [], "phase": 2, "module": "src.acquire.irs_soi"},
     "census_qwi":        {"depends_on": [], "phase": 2, "module": "src.acquire.census_qwi"},
+    "lehd_lodes":        {"depends_on": [], "phase": 2, "module": "src.acquire.lehd_lodes"},
     "census_acs":        {"depends_on": [], "phase": 2, "module": "src.acquire.census_acs"},
     "fema_pa":           {"depends_on": ["fema_declarations"], "phase": 2, "module": "src.acquire.fema_pa"},
     "fema_ia":           {"depends_on": ["fema_declarations"], "phase": 2, "module": "src.acquire.fema_ia"},

@@ -1,0 +1,231 @@
+=== ZIP-Level Sector DiD (ZBP Detail, NAICS Breakdown) ===
+Date: 2026-03-06 11:11:55
+Panel: 13 ZIPs (4 treated, 9 control), 27 years (1994–2020)
+Treatment: NFIP payouts > $500K (Oct-Nov 1998 flood)
+SEs: clustered by ZIP (13 clusters)
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+Sector: Construction (NAICS 23)
+Binary DiD (ln_emp ~ treated:post | zip + year):
+OLS estimation, Dep. Var.: ln_construction
+Observations: 342 
+Fixed-effects: zip: 13,  year: 27
+Standard-errors: Clustered (zip) 
+              Estimate Std. Error   t value Pr(>|t|) 
+treated:post -0.337181   0.443942 -0.759516   0.4622 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 0.435176     Adj. R2: 0.764286
+                 Within R2: 0.019256
+
+Event Study:
+OLS estimation, Dep. Var.: ln_construction
+Observations: 342 
+Fixed-effects: zip: 13,  year: 27
+Standard-errors: Clustered (zip) 
+                    Estimate Std. Error   t value Pr(>|t|)    
+year::1994:treated  0.405857   0.178361  2.275479  0.04202 *  
+year::1995:treated  0.288297   0.177277  1.626255  0.12985    
+year::1996:treated  0.108249   0.114526  0.945192  0.36320    
+year::1997:treated  0.121718   0.088446  1.376184  0.19390    
+year::1999:treated  0.038193   0.116939  0.326606  0.74959    
+year::2000:treated  0.133462   0.188605  0.707629  0.49269    
+year::2001:treated  0.118537   0.218507  0.542485  0.59742    
+year::2002:treated  0.025826   0.289173  0.089311  0.93031    
+year::2003:treated  0.067568   0.256152  0.263779  0.79643    
+year::2004:treated  0.033670   0.291297  0.115587  0.90989    
+year::2005:treated -0.036039   0.305929 -0.117801  0.90817    
+year::2006:treated -0.051580   0.373583 -0.138068  0.89248    
+year::2007:treated -0.611706   0.820345 -0.745670  0.47022    
+year::2008:treated -0.356659   0.705734 -0.505373  0.62245    
+year::2009:treated -0.466620   0.763811 -0.610910  0.55266    
+year::2010:treated -0.333554   0.486640 -0.685423  0.50610    
+year::2011:treated -0.193171   0.463359 -0.416892  0.68412    
+year::2012:treated -0.565317   0.703931 -0.803086  0.43754    
+year::2013:treated -0.397310   0.671755 -0.591452  0.56519    
+year::2014:treated -0.431584   0.747521 -0.577354  0.57437    
+year::2015:treated -0.347162   0.735135 -0.472243  0.64523    
+year::2016:treated -0.490223   0.666882 -0.735097  0.47640    
+year::2017:treated  0.286359   0.471801  0.606949  0.55520    
+year::2018:treated  0.087508   0.446214  0.196112  0.84780    
+year::2019:treated  0.436852   0.457659  0.954536  0.35865    
+year::2020:treated  0.060261   0.471638  0.127769  0.90045    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 0.41838     Adj. R2: 0.762466
+                Within R2: 0.093498
+
+Intensity DiD:
+OLS estimation, Dep. Var.: ln_construction
+Observations: 342 
+Fixed-effects: zip: 13,  year: 27
+Standard-errors: Clustered (zip) 
+                Estimate Std. Error   t value Pr(>|t|) 
+intensity:post -0.012712   0.024632 -0.516068  0.61518 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 0.438131     Adj. R2: 0.761074
+                 Within R2: 0.005889
+
+Sector share DiD:
+OLS estimation, Dep. Var.: construction_share
+Observations: 351 
+Fixed-effects: zip: 13,  year: 27
+Standard-errors: Clustered (zip) 
+             Estimate Std. Error  t value Pr(>|t|) 
+treated:post -31.9579    30.8865 -1.03469  0.32122 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 32.7     Adj. R2: 0.02499 
+             Within R2: 0.029847
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+Sector: Retail (NAICS 44-45)
+Binary DiD (ln_emp ~ treated:post | zip + year):
+OLS estimation, Dep. Var.: ln_retail
+Observations: 343 
+Fixed-effects: zip: 13,  year: 27
+Standard-errors: Clustered (zip) 
+              Estimate Std. Error  t value Pr(>|t|) 
+treated:post -0.444249   0.386007 -1.15089   0.2722 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 0.526925     Adj. R2: 0.862186
+                 Within R2: 0.022564
+
+Event Study:
+OLS estimation, Dep. Var.: ln_retail
+Observations: 343 
+Fixed-effects: zip: 13,  year: 27
+Standard-errors: Clustered (zip) 
+                    Estimate Std. Error   t value Pr(>|t|)    
+year::1994:treated  0.872749   0.443028  1.969963 0.072362 .  
+year::1995:treated  0.589647   0.262380  2.247305 0.044211 *  
+year::1996:treated  0.437907   0.177746  2.463665 0.029838 *  
+year::1997:treated  0.102877   0.215354  0.477709 0.641441    
+year::1999:treated  0.179827   0.251991  0.713626 0.489106    
+year::2000:treated  0.166899   0.305755  0.545860 0.595165    
+year::2001:treated  0.228058   0.395418  0.576751 0.574767    
+year::2002:treated  0.197077   0.319776  0.616297 0.549211    
+year::2003:treated  0.052947   0.302827  0.174844 0.864118    
+year::2004:treated  0.066091   0.324523  0.203655 0.842036    
+year::2005:treated -0.094860   0.299771 -0.316440 0.757106    
+year::2006:treated  0.366879   0.519767  0.705854 0.493755    
+year::2007:treated  0.132683   0.579569  0.228933 0.822776    
+year::2008:treated  0.005389   0.510788  0.010550 0.991756    
+year::2009:treated -0.138402   0.538805 -0.256869 0.801631    
+year::2010:treated -0.135287   0.515931 -0.262220 0.797599    
+year::2011:treated -0.019808   0.586827 -0.033754 0.973628    
+year::2012:treated  0.073760   0.614774  0.119978 0.906486    
+year::2013:treated  0.050789   0.598398  0.084876 0.933760    
+year::2014:treated -0.671405   1.020286 -0.658056 0.522927    
+year::2015:treated -0.504851   0.817531 -0.617531 0.548424    
+year::2016:treated -0.597842   0.837821 -0.713567 0.489141    
+year::2017:treated  0.032574   0.477061  0.068280 0.946688    
+year::2018:treated -0.108576   0.450313 -0.241113 0.813538    
+year::2019:treated -0.052638   0.505672 -0.104095 0.918814    
+year::2020:treated -0.166245   0.447919 -0.371149 0.716996    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 0.511912     Adj. R2: 0.85823 
+                 Within R2: 0.077469
+
+Intensity DiD:
+OLS estimation, Dep. Var.: ln_retail
+Observations: 343 
+Fixed-effects: zip: 13,  year: 27
+Standard-errors: Clustered (zip) 
+                Estimate Std. Error   t value Pr(>|t|) 
+intensity:post -0.020715   0.023425 -0.884326  0.39389 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 0.53014     Adj. R2: 0.8605  
+                Within R2: 0.010602
+
+Sector share DiD:
+OLS estimation, Dep. Var.: retail_share
+Observations: 351 
+Fixed-effects: zip: 13,  year: 27
+Standard-errors: Clustered (zip) 
+             Estimate Std. Error  t value Pr(>|t|) 
+treated:post -202.155     190.24 -1.06263  0.30887 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 200.6     Adj. R2: 0.02842 
+              Within R2: 0.031606
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+Sector: Food Service (NAICS 72)
+Binary DiD (ln_emp ~ treated:post | zip + year):
+OLS estimation, Dep. Var.: ln_foodservice
+Observations: 347 
+Fixed-effects: zip: 13,  year: 27
+Standard-errors: Clustered (zip) 
+              Estimate Std. Error   t value Pr(>|t|) 
+treated:post -0.093086   0.589317 -0.157955  0.87712 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 0.568839     Adj. R2: 0.831136
+                 Within R2: 8.635e-4
+
+Event Study:
+OLS estimation, Dep. Var.: ln_foodservice
+Observations: 347 
+Fixed-effects: zip: 13,  year: 27
+Standard-errors: Clustered (zip) 
+                    Estimate Std. Error   t value Pr(>|t|) 
+year::1994:treated  0.473498   0.477121  0.992406  0.34059 
+year::1995:treated  0.153012   0.363435  0.421016  0.68119 
+year::1996:treated -0.085240   0.312322 -0.272924  0.78955 
+year::1997:treated -0.129711   0.376318 -0.344684  0.73630 
+year::1999:treated  0.054757   0.121905  0.449179  0.66131 
+year::2000:treated -0.229162   0.257641 -0.889462  0.39124 
+year::2001:treated -0.037373   0.246928 -0.151350  0.88221 
+year::2002:treated  0.045213   0.336444  0.134384  0.89533 
+year::2003:treated  0.164170   0.336882  0.487322  0.63481 
+year::2004:treated  0.204286   0.354800  0.575778  0.57540 
+year::2005:treated -0.094663   0.346773 -0.272983  0.78951 
+year::2006:treated -0.298993   0.368958 -0.810370  0.43350 
+year::2007:treated  0.036425   0.395496  0.092100  0.92814 
+year::2008:treated  0.069739   0.386569  0.180405  0.85985 
+year::2009:treated  0.001288   0.407918  0.003157  0.99753 
+year::2010:treated -0.188544   0.406843 -0.463432  0.65135 
+year::2011:treated  0.073627   0.503255  0.146301  0.88611 
+year::2012:treated -0.098126   0.600669 -0.163361  0.87295 
+year::2013:treated -0.162965   0.574759 -0.283536  0.78160 
+year::2014:treated -0.134821   0.631252 -0.213578  0.83446 
+year::2015:treated -0.205064   0.627072 -0.327017  0.74929 
+year::2016:treated -0.209614   0.673098 -0.311416  0.76083 
+year::2017:treated  0.341195   0.813484  0.419425  0.68232 
+year::2018:treated  0.088121   0.804822  0.109491  0.91462 
+year::2019:treated  0.280168   0.786218  0.356349  0.72777 
+year::2020:treated  0.284335   0.741477  0.383471  0.70808 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 0.562683     Adj. R2: 0.820124
+                 Within R2: 0.022374
+
+Intensity DiD:
+OLS estimation, Dep. Var.: ln_foodservice
+Observations: 347 
+Fixed-effects: zip: 13,  year: 27
+Standard-errors: Clustered (zip) 
+                Estimate Std. Error  t value Pr(>|t|) 
+intensity:post -0.027419   0.042286 -0.64843  0.52892 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 0.564468     Adj. R2: 0.833722
+                 Within R2: 0.016161
+
+Sector share DiD:
+OLS estimation, Dep. Var.: foodservice_share
+Observations: 351 
+Fixed-effects: zip: 13,  year: 27
+Standard-errors: Clustered (zip) 
+             Estimate Std. Error  t value Pr(>|t|) 
+treated:post -119.377    113.532 -1.05148  0.31375 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 119.6     Adj. R2: 0.027448
+              Within R2: 0.031027
+

@@ -25,6 +25,13 @@ _rate_limiter = RateLimiter(min_delay=1.0)
 # Bulk annual single-file URL pattern
 BULK_URL = "https://data.bls.gov/cew/data/files/{year}/csv/{year}_annual_singlefile.zip"
 
+# Sector codes to retain (total + construction + retail + food service/accommodation)
+# "10"    = Total, all industries
+# "23"    = Construction
+# "44-45" = Retail Trade
+# "72"    = Accommodation and Food Services
+SECTOR_CODES = {"10", "23", "44-45", "72"}
+
 
 def _download_year(year: int) -> pd.DataFrame | None:
     """Download and parse QCEW bulk data for a single year."""
@@ -58,11 +65,11 @@ def _download_year(year: int) -> pd.DataFrame | None:
     ].copy()
 
     # Filter to total and private ownership (own_code 0 and 5)
-    # and total industry (industry_code 10 for total all industries)
+    # and target industry codes (total + construction + retail + food service)
     if "own_code" in df.columns:
         df = df[df["own_code"].isin(["0", "5"])].copy()
     if "industry_code" in df.columns:
-        df = df[df["industry_code"] == "10"].copy()
+        df = df[df["industry_code"].isin(SECTOR_CODES)].copy()
 
     log.info("qcew_year_parsed", year=year, rows=len(df))
     return df

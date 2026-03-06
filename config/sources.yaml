@@ -68,6 +68,15 @@ census_qwi:
   temporal: {start: 1993, end: 2025}
   output_dir: "census_qwi"
 
+lehd_lodes:
+  description: "LEHD LODES8 Workplace Area Characteristics (tract-level)"
+  bulk_url: "https://lehd.ces.census.gov/data/lodes/LODES8/tx/wac/"
+  rate_limit_delay: 1.0
+  temporal: {start: 2002, end: 2021}
+  counties: ["48091", "48209", "48259"]  # Comal, Hays, Kendall
+  note: "No pre-treatment period available (flood was 1998); used for persistent-effects test"
+  output_dir: "lehd_lodes"
+
 census_acs:
   description: "Census ACS and Decennial"
   acs5_url: "https://api.census.gov/data/{year}/acs/acs5"

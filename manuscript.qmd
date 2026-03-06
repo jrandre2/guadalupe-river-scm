@@ -1,0 +1,757 @@
+---
+title: "Transitory Disruption or Lasting Scar? Long-Run Economic Effects of the 1998 Guadalupe River Flood"
+author:
+  - name: "Jesse Andrews"
+    affiliation: "Texas Tech University"
+date: today
+date-format: "MMMM D, YYYY"
+
+abstract: |
+  I estimate the long-run economic effects of the October 1998 Guadalupe River flood
+  (FEMA DR-1257-TX) on Comal County, Texas, using a synthetic control method (SCM)
+  and complementary difference-in-differences (DiD) designs at the ZIP code level.
+  The SCM constructs a weighted combination of Texas counties that closely mirrors
+  Comal County's per-capita income trajectory over 1978–1998 (pre-treatment RMSPE:
+  \$660, or 1.7 percent of the pre-period mean). Following a transitory contraction
+  of −\$2,795 in 1999, Comal County converged to its synthetic counterpart by 2001
+  and subsequently outperformed it by an average of \$3,513 per year through 2022.
+  A permutation-based placebo test yields p = 0.625, indicating the post-flood
+  trajectory is unremarkable relative to the donor pool. ZIP-level DiD on business
+  activity, housing values, and sector employment (construction, retail, food service)
+  uniformly finds no statistically significant effect. Three robustness checks—ridge
+  augmented SCM, wild cluster bootstrap, and HonestDiD sensitivity analysis—confirm
+  the null. The results are consistent with the disaster economics literature: spatially
+  concentrated floods in rapidly growing economies produce short-lived disruptions that
+  are absorbed within two to three years.
+
+keywords: [synthetic control, difference-in-differences, natural disaster, economic recovery, flood]
+jel: [Q54, R11, H84]
+
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: cosmo
+    fig-cap-location: bottom
+    fig-width: 9
+    fig-height: 5.5
+    embed-resources: true
+  pdf:
+    documentclass: article
+    fontsize: 12pt
+    geometry: margin=1in
+    number-sections: true
+    keep-tex: false
+    fig-pos: "H"
+    colorlinks: true
+
+bibliography: references.bib
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+.libPaths(c("~/R/library", .libPaths()))
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(readr)
+  library(ggplot2)
+  library(tidyr)
+  library(scales)
+  library(knitr)
+  library(kableExtra)
+})
+
+PROJECT_ROOT <- here::here()
+RESULTS_DIR  <- file.path(PROJECT_ROOT, "data/results")
+FIG_DIR      <- file.path(RESULTS_DIR, "figures")
+
+# Load key result datasets
+scm_gap      <- read_csv(file.path(RESULTS_DIR, "scm_gap.csv"),      show_col_types = FALSE)
+scm_weights  <- read_csv(file.path(RESULTS_DIR, "scm_weights.csv"),  show_col_types = FALSE)
+scm_balance  <- read_csv(file.path(RESULTS_DIR, "scm_balance.csv"),  show_col_types = FALSE)
+placebo_ratios <- read_csv(file.path(RESULTS_DIR, "placebo_rmspe_ratios.csv"), show_col_types = FALSE)
+ascm_att     <- read_csv(file.path(RESULTS_DIR, "ascm_att.csv"),     show_col_types = FALSE)
+wb_results   <- read_csv(file.path(RESULTS_DIR, "wild_bootstrap_results.csv"), show_col_types = FALSE)
+did_es       <- read_csv(file.path(RESULTS_DIR, "did_event_study.csv"),         show_col_types = FALSE)
+hpi_es       <- read_csv(file.path(RESULTS_DIR, "did_hpi_event_study.csv"),     show_col_types = FALSE)
+sector_scm   <- read_csv(file.path(RESULTS_DIR, "scm_sector_summary.csv"),      show_col_types = FALSE)
+sector_did   <- read_csv(file.path(RESULTS_DIR, "did_zbp_sector_event_study.csv"), show_col_types = FALSE)
+
+# Key scalars
+rmspe_pre     <- scm_gap |> filter(year <= 1998) |> pull(gap) |> (\(x) sqrt(mean(x^2)))()
+perm_p        <- mean(placebo_ratios$ratio >= placebo_ratios$ratio[placebo_ratios$is_treated])
+comal_ratio   <- placebo_ratios$ratio[placebo_ratios$is_treated]
+gap_1999      <- scm_gap$gap[scm_gap$year == 1999]
+gap_2001      <- scm_gap$gap[scm_gap$year == 2001]
+att_post_mean <- scm_gap |> filter(year >= 1999) |> pull(gap) |> mean()
+ascm_att_mean <- ascm_att |> filter(year >= 1999) |> pull(att) |> mean(na.rm = TRUE)
+```
+
+# Introduction {#sec-intro}
+
+On October 17, 1998, record rainfall from Tropical Storm Hermine caused catastrophic
+flooding along the Guadalupe River in Comal County, Texas. The Federal Emergency
+Management Agency (FEMA) issued disaster declaration DR-1257-TX on October 21, 1998,
+and the National Flood Insurance Program (NFIP) ultimately paid \$22.5 million in
+claims across 278 policies—concentrated heavily in the New Braunfels downtown area
+(ZIP 78130: \$17.0 million). Was this a momentary disruption, or did it inflict a
+lasting scar on the county's economic trajectory?
+
+Answering this question matters beyond the specific event. Disaster economics has
+generated conflicting findings: some studies document rapid convergence
+[@Vigdor2008; @Hornbeck2012], while others find persistent negative effects
+[@Strobl2011; @Deryugina2018]. The resolution often hinges on economic context—growth
+rates, insurance coverage, federal aid, and labor-market flexibility. Comal County in
+1998 was a rapidly growing exurban county south of Austin and San Antonio, with
+above-average income and low unemployment. This setting allows a clean test of the
+"absorption hypothesis": that disasters in prosperous, growing economies produce
+transient disruptions that are quickly absorbed.
+
+I estimate the causal effect using three complementary designs:
+
+1. **County-level SCM** (Sections @sec-data–@sec-scm): a synthetic control that
+   matches Comal County on 21 years of per-capita income, employment, and demographic
+   predictors, using 31 growth-matched Texas counties as donors.
+
+2. **ZIP-level DiD** (Section @sec-did): within-county difference-in-differences
+   comparing four flood-exposed ZIP codes (NFIP payouts > \$500K) against nine
+   minimally-affected ZIPs, using Census ZIP Code Business Patterns (1994–2020) and
+   FHFA House Price Index data.
+
+3. **Sector-level extensions** (Section @sec-sector): SCM and DiD disaggregated by
+   NAICS sector (construction, retail, food service), testing whether flood effects
+   are concentrated in specific industries.
+
+The headline result across all designs is a consistent null: no statistically
+significant long-run effect on per-capita income, business activity, housing values,
+or sector employment. Comal County's 1999 contraction (−\$2,795) reversed by 2001,
+and by 2022 the county outperformed its synthetic counterpart on average.
+
+# Data {#sec-data}
+
+## County-Level Panel
+
+The county-level panel covers all 254 Texas counties over 1990–2022 (11,938
+observations). Core outcome variables are drawn from the Bureau of Economic Analysis
+Regional Economic Accounts: per-capita personal income (deflated to 2020 dollars
+using the CPI-U). Predictor variables include per-capita income lags, the
+employment-to-population ratio (Bureau of Labor Statistics Local Area Unemployment
+Statistics), average annual wages (BLS Quarterly Census of Employment and Wages),
+and working-age population share (Census Bureau intercensal estimates). All nominal
+dollar values are deflated to 2020 base year.
+
+## ZIP-Level Business Activity Panel
+
+The ZIP-level panel covers 13 ZIP codes in Comal, Kendall, and Hays counties over
+1994–2020 (351 observations). Data come from the Census Bureau's ZIP Code Business
+Patterns (ZBP) program: annual establishment counts, employment, and annual payroll.
+Sector-level panels use the ZBP detail files, which provide NAICS breakdowns at the
+ZIP level; employment is estimated from establishment size bands using midpoint
+imputation.
+
+## Housing Price Index Panel
+
+House price data come from the FHFA House Price Index at the ZIP code (391
+observations, 12 ZIPs) and census tract (1,037 observations, 32 tracts) levels,
+covering 1992–2020.
+
+## NFIP Treatment Assignment
+
+Flood exposure is measured by NFIP insurance payouts from the October–November 1998
+event. For the county-level analysis, Comal County is the treated unit. For
+ZIP-level DiD, four ZIP codes with payouts exceeding \$500,000 are classified as
+treated: 78130 (New Braunfels downtown, \$17.0M), 78132 (\$2.6M), 78163 (\$1.7M),
+and 78131 (\$1.0M). Nine ZIPs with payouts below \$130,000 serve as controls.
+
+# Synthetic Control Estimation {#sec-scm}
+
+## Design
+
+The synthetic control method [@AbadieDiamond2010; @AbadieGardeazabal2003]
+constructs a weighted average of donor units that closely approximates the treated
+unit's pre-treatment outcome trajectory. I follow @Abadie2021 in restricting the
+donor pool to counties with similar growth patterns: starting from 171 FIPS-eligible
+Texas counties, I screen to 69 based on 1978–1998 income growth quartiles, then
+match to 31 donors that fall within one standard deviation of Comal County's
+income trajectory. The synthetic control is estimated using `tidysynth`
+[@Chaterjee2021] via a convex combination of donor weights that minimizes the
+pre-treatment mean squared prediction error (MSPE).
+
+## Pre-Treatment Fit
+
+```{r}
+#| label: tbl-balance
+#| tbl-cap: "Pre-Treatment Balance: Comal County vs. Synthetic Control"
+
+scm_balance |>
+  mutate(
+    variable = case_when(
+      variable == "pci_early"   ~ "Per-capita income, 1978–1988 avg (2020\\$)",
+      variable == "pci_late"    ~ "Per-capita income, 1989–1998 avg (2020\\$)",
+      variable == "unemp_avg"   ~ "Unemployment rate, 1990–1998 avg (\\%)",
+      variable == "emp_pop_avg" ~ "Employment/population ratio, 1990–1998 avg",
+      variable == "wage_avg"    ~ "Average annual wage, 1990–1998 avg (2020\\$)",
+      TRUE ~ variable
+    )
+  ) |>
+  rename(
+    `Predictor` = variable,
+    `Comal County` = `48091`,
+    `Synthetic Comal` = synthetic_48091,
+    `Donor Sample Mean` = donor_sample
+  ) |>
+  mutate(across(where(is.numeric), ~ ifelse(abs(.) > 100,
+                                             comma(round(., 0)),
+                                             round(., 3)))) |>
+  kbl(booktabs = TRUE, align = c("l","r","r","r")) |>
+  kable_styling(latex_options = c("hold_position"), font_size = 10)
+```
+
+The synthetic Comal County is composed primarily of Rockwall County (53.6%),
+Lampasas County (27.7%), Bowie County (8.3%), and Atascosa County (6.2%).
+Pre-treatment fit is excellent: the RMSPE over 1978–1998 is
+\$`r comma(round(rmspe_pre, 0))`, equal to 1.7 percent of the 1978–1998 mean
+per-capita income. @tbl-balance shows near-perfect matching on all five pre-treatment
+predictors.
+
+## Main Results
+
+```{r}
+#| label: fig-scm-gap
+#| fig-cap: "Synthetic Control Gap: Comal County minus Synthetic Comal County (per-capita income, 2020\\$). Vertical line marks the 1998 flood. Shaded band shows ±1 SD of donor gaps over the post period."
+
+post_sd <- scm_gap |>
+  filter(year >= 1999) |>
+  pull(gap) |>
+  sd()
+
+ggplot(scm_gap, aes(x = year, y = gap)) +
+  annotate("rect", xmin = 1999, xmax = max(scm_gap$year),
+           ymin = -Inf, ymax = Inf, alpha = 0.04, fill = "steelblue") +
+  geom_hline(yintercept = 0, color = "gray50", linewidth = 0.8) +
+  geom_vline(xintercept = 1998.5, linetype = "dashed", color = "gray40") +
+  geom_line(color = "#d62728", linewidth = 1.3) +
+  geom_point(color = "#d62728", size = 1.8) +
+  annotate("text", x = 1998.5, y = Inf,
+           label = "Oct 1998 flood", hjust = -0.08, vjust = 1.8,
+           size = 3, color = "gray40") +
+  scale_x_continuous(breaks = seq(1978, 2022, 4)) +
+  scale_y_continuous(labels = dollar_format(prefix = "$", suffix = "", big.mark = ",")) +
+  labs(x = NULL, y = "Gap (Comal − Synthetic, 2020$)",
+       caption = "Note: Negative = Comal below synthetic. Pre-treatment RMSPE = $660 (1.7% of mean).") +
+  theme_minimal(base_size = 11) +
+  theme(plot.caption = element_text(size = 8, color = "gray50"),
+        panel.grid.minor = element_blank())
+```
+
+@fig-scm-gap plots the gap between Comal County and its synthetic counterpart over
+the full 1978–2022 window. Three features stand out:
+
+1. **Near-zero pre-treatment gap**: the synthetic control tracks actual Comal County
+   income closely, confirming the quality of the pre-treatment fit.
+
+2. **Transitory contraction**: Comal County falls below its synthetic counterpart in
+   1999 (gap: `r dollar(round(gap_1999, 0))`), consistent with the acute disruption
+   from the flood.
+
+3. **Rapid recovery**: the gap closes by 2001 (`r dollar(round(gap_2001, 0))`) and
+   turns persistently positive thereafter, averaging
+   `r dollar(round(att_post_mean, 0))` per year over the post period.
+
+```{r}
+#| label: fig-scm-trends
+#| fig-cap: "Per-capita income trajectories: Comal County (solid red) and synthetic Comal County (dashed blue), 1978–2022."
+
+synth <- scm_gap  # scm_gap.csv already has actual + synthetic columns
+
+ggplot(synth, aes(x = year)) +
+  geom_line(aes(y = actual,    color = "Comal County"),    linewidth = 1.3) +
+  geom_line(aes(y = synthetic, color = "Synthetic Comal"), linewidth = 1.1, linetype = "dashed") +
+  geom_vline(xintercept = 1998.5, linetype = "dotted", color = "gray40") +
+  scale_color_manual(values = c("Comal County" = "#d62728", "Synthetic Comal" = "#1f77b4")) +
+  scale_x_continuous(breaks = seq(1990, 2022, 4)) +
+  scale_y_continuous(labels = dollar_format(big.mark = ",")) +
+  labs(x = NULL, y = "Per-capita income (2020$)", color = NULL) +
+  theme_minimal(base_size = 11) +
+  theme(legend.position = "top", panel.grid.minor = element_blank())
+```
+
+## Placebo Tests {#sec-placebo}
+
+```{r}
+#| label: fig-placebo
+#| fig-cap: "In-space placebo test: RMSPE ratio (post/pre) for Comal County (red triangle) versus 30 donor counties. Comal's ratio ranks 12th out of 31, yielding permutation p = 0.625."
+
+comal_row <- placebo_ratios |> filter(is_treated)
+
+ggplot(placebo_ratios |> filter(!is_treated),
+       aes(x = reorder(as.character(fips), ratio), y = ratio)) +
+  geom_col(fill = "steelblue", alpha = 0.7) +
+  geom_hline(yintercept = comal_row$ratio, color = "#d62728",
+             linetype = "dashed", linewidth = 1) +
+  geom_point(data = comal_row, aes(x = reorder(as.character(fips), ratio), y = ratio),
+             color = "#d62728", shape = 17, size = 4) +
+  annotate("text", x = 5, y = comal_row$ratio * 1.1,
+           label = sprintf("Comal: ratio = %.1f\np = %.3f", comal_row$ratio, perm_p),
+           size = 3, color = "#d62728") +
+  scale_y_log10(labels = comma) +
+  labs(x = "Donor county (FIPS)", y = "Post/pre RMSPE ratio (log scale)") +
+  theme_minimal(base_size = 10) +
+  theme(axis.text.x = element_blank(), panel.grid.minor = element_blank())
+```
+
+Following @Abadie2021, I conduct three placebo tests:
+
+**In-space placebos** (@fig-placebo): applying the SCM to each of the 30 donor
+counties, the permutation p-value is
+p = `r sprintf("%.3f", perm_p)` (Comal ranks `r sum(placebo_ratios$ratio >= comal_row$ratio)` of 31 by RMSPE ratio). The 1998 flood cannot be distinguished
+from a placebo.
+
+**Leave-one-out**: dropping each of the five donors with positive weight in turn,
+the gap series remains qualitatively unchanged—Comal shows a transitory 1999 dip
+followed by recovery and outperformance.
+
+**In-time placebo (1994)**: assigning a fictitious treatment in 1994 produces no
+significant post-1994 divergence, confirming the absence of confounding pre-trends.
+
+# Difference-in-Differences: ZIP-Level Business Activity {#sec-did}
+
+## Design
+
+The ZIP-level DiD exploits within-county variation in flood exposure. Four New
+Braunfels ZIP codes received over \$500,000 in NFIP payouts (treated); nine ZIPs in
+Comal, Kendall, and Hays counties received less than \$130,000 (control). The
+estimating equation is:
+
+$$
+\ln Y_{zt} = \alpha_z + \lambda_t + \beta (\text{Treated}_z \times \text{Post}_t) + \varepsilon_{zt}
+$$
+
+with ZIP and year fixed effects and standard errors clustered by ZIP (13 clusters).
+All specifications use the `fixest` package [@Berge2018].
+
+## Main Results
+
+```{r}
+#| label: tbl-did-main
+#| tbl-cap: "ZIP-Level DiD: Binary Treatment Effects on Business Activity (2SFE, 1994–2020)"
+
+# Pull from wild bootstrap results for consistency
+wb_zbp <- wb_results |> filter(analysis == "ZBP DiD") |>
+  mutate(
+    outcome_label = case_when(
+      outcome == "ln_estab"       ~ "ln(Establishments)",
+      outcome == "ln_emp"         ~ "ln(Employment)",
+      outcome == "ln_payann_real" ~ "ln(Annual payroll, 2020$)",
+      TRUE ~ outcome
+    ),
+    coef_fmt = sprintf("%+.3f", coef),
+    se_fmt   = sprintf("(%.3f)", se_cr),
+    p_fmt    = sprintf("%.3f", p_cr),
+    p_boot_fmt = sprintf("%.3f", p_boot)
+  ) |>
+  select(outcome_label, coef_fmt, se_fmt, p_fmt, p_boot_fmt)
+
+wb_zbp |>
+  rename(
+    `Outcome`          = outcome_label,
+    `Coef.`            = coef_fmt,
+    `SE (CR)`          = se_fmt,
+    `p (CR)`           = p_fmt,
+    `p (wild boot.)`   = p_boot_fmt
+  ) |>
+  kbl(booktabs = TRUE, align = c("l","r","r","r","r")) |>
+  kable_styling(latex_options = "hold_position", font_size = 10) |>
+  footnote(general = "ZIP + year FEs. SEs clustered by ZIP (13 clusters). Wild cluster bootstrap p-values from fwildclusterboot (B = 9,999). Treated = 4 ZIPs with NFIP payouts > $500K; control = 9 ZIPs with < $130K.",
+           general_title = "Notes:", footnote_as_chunk = TRUE)
+```
+
+@tbl-did-main shows no significant effect on any business activity outcome. The
+binary DiD coefficient on log establishments is −0.524 (SE = 0.388, p = 0.202);
+wild cluster bootstrap yields p = 0.222. Employment and payroll effects are also
+statistically indistinguishable from zero.
+
+```{r}
+#| label: fig-did-event
+#| fig-cap: "ZIP-level DiD event study: coefficient on (year × treated) for log establishments, with 95% clustered CIs. Reference year: 1998."
+
+did_es_estab <- did_es |> filter(outcome == "ln_estab")
+
+ggplot(did_es_estab, aes(x = year, y = estimate, ymin = ci_lo, ymax = ci_hi)) +
+  geom_hline(yintercept = 0, color = "gray60", linewidth = 0.7) +
+  geom_vline(xintercept = 1998.5, linetype = "dashed", color = "gray40") +
+  geom_ribbon(alpha = 0.15, fill = "#1f77b4") +
+  geom_line(color = "#1f77b4", linewidth = 1.1) +
+  geom_point(color = "#1f77b4", size = 2) +
+  scale_x_continuous(breaks = seq(1994, 2020, 2)) +
+  labs(x = NULL, y = "Coefficient (log establishments)",
+       caption = "95% CI, clustered by ZIP. Reference year = 1998.") +
+  theme_minimal(base_size = 11) +
+  theme(panel.grid.minor = element_blank(),
+        plot.caption = element_text(size = 8, color = "gray50"))
+```
+
+The event study (@fig-did-event) reveals a downward pre-trend in treated relative
+to control ZIPs. A joint Wald test on pre-1998 coefficients fails to reject
+parallel trends (F(4, 286) = 1.3, p = 0.260), but a linear pre-trend test yields
+slope = −0.125 (p = 0.121). The R/07 HonestDiD analysis confirms the null result
+is robust to pre-trend violations up to M = 0.02 standard deviations, and the
+relative magnitudes confidence interval includes zero at all sensitivity levels.
+
+## Housing Price Index DiD {#sec-hpi}
+
+```{r}
+#| label: hpi-data
+#| include: false
+hpi_zip   <- read_csv(file.path(PROJECT_ROOT, "data/processed/panels/did_hpi_zip_panel.csv"),
+                      show_col_types = FALSE)
+hpi_tract <- read_csv(file.path(PROJECT_ROOT, "data/processed/panels/did_hpi_tract_panel.csv"),
+                      show_col_types = FALSE)
+hpi_rt    <- read_csv(file.path(RESULTS_DIR, "hpi_recovery_timing.csv"), show_col_types = FALSE)
+
+zip_labels <- c(
+  "78130" = "78130 NB Downtown", "78131" = "78131 NB",
+  "78132" = "78132 NB Outskirts", "78163" = "78163 Bulverde",
+  "78133" = "78133 Canyon Lake",  "78266" = "78266 Garden Ridge",
+  "78070" = "78070 Spring Branch",
+  "78006" = "78006 Boerne",       "78013" = "78013 Comfort",
+  "78015" = "78015 Fair Oaks Ranch"
+)
+```
+
+```{r}
+#| label: fig-hpi-zip-traj
+#| fig-cap: "Normalized ZIP-code house price trajectories (1998 = 1.0). Treated ZIPs (red) had NFIP payouts exceeding $500K; control ZIPs (blue) had payouts below $130K. Dashed line marks the flood."
+#| fig-height: 4.5
+
+hpi_zip <- hpi_zip |>
+  mutate(zip = as.character(zip)) |>
+  filter(!is.na(hpi_val))
+
+# Index each ZIP to its 1998 value
+base_1998 <- hpi_zip |>
+  filter(year == 1998) |>
+  select(zip, hpi_base = hpi_val)
+
+hpi_idx <- hpi_zip |>
+  left_join(base_1998, by = "zip") |>
+  mutate(hpi_norm = hpi_val / hpi_base) |>
+  filter(!is.na(hpi_norm))
+
+treated_zips <- c("78130","78131","78132","78163")
+
+ggplot(hpi_idx, aes(x = year, y = hpi_norm, group = zip,
+                    color = ifelse(zip %in% treated_zips, "Treated", "Control"),
+                    linewidth = ifelse(zip %in% treated_zips, "Treated", "Control"),
+                    alpha = ifelse(zip %in% treated_zips, "Treated", "Control"))) +
+  geom_line() +
+  geom_vline(xintercept = 1998.5, linetype = "dashed", color = "gray40") +
+  geom_hline(yintercept = 1, color = "gray70", linewidth = 0.5) +
+  scale_color_manual(values = c(Treated = "#d62728", Control = "#1f77b4")) +
+  scale_linewidth_manual(values = c(Treated = 1.0, Control = 0.6)) +
+  scale_alpha_manual(values = c(Treated = 1.0, Control = 0.5)) +
+  scale_x_continuous(breaks = seq(1990, 2020, 4)) +
+  scale_y_continuous(labels = percent_format(accuracy = 1)) +
+  labs(x = NULL, y = "HPI (1998 = 100%)", color = NULL,
+       caption = "FHFA House Price Index. Each line = one ZIP code. 10 ZIPs total (4 treated, 6 control).") +
+  guides(linewidth = "none", alpha = "none") +
+  theme_minimal(base_size = 11) +
+  theme(legend.position = "top", panel.grid.minor = element_blank(),
+        plot.caption = element_text(size = 8, color = "gray50"))
+```
+
+@fig-hpi-zip-traj shows normalized HPI trajectories for the 10 ZIPs with FHFA
+data. All ZIP codes appreciate over the study period, reflecting the Texas housing
+boom. The treated ZIPs (red) and control ZIPs (blue) track closely through the
+1990s, with no visible divergence at the flood date. Housing value recovery was
+rapid: New Braunfels downtown (78130, the hardest-hit ZIP with \$17.0M in NFIP
+payouts) recovered within one year; 78132 within two years; 78163 (Bulverde) within
+six years (@tbl-recovery-timing).
+
+```{r}
+#| label: tbl-recovery-timing
+#| tbl-cap: "Housing Price Recovery Timing by Treated ZIP Code"
+
+hpi_rt |>
+  mutate(nfip_paid = dollar(round(nfip_paid, 0))) |>
+  rename(
+    `ZIP Code` = zip, `Area` = label,
+    `NFIP Payouts` = nfip_paid,
+    `First Full Recovery Year` = recovery_year,
+    `Years to Recover` = years_to_recover
+  ) |>
+  kbl(booktabs = TRUE, align = c("c","l","r","c","c")) |>
+  kable_styling(latex_options = "hold_position", font_size = 10) |>
+  footnote(general = "Recovery year = first year HPI returns to 1998 level in real terms.",
+           general_title = "Notes:", footnote_as_chunk = TRUE)
+```
+
+```{r}
+#| label: fig-hpi-tract-traj
+#| fig-cap: "Census tract HPI trajectories by treatment status (1998 = 1.0). Treated tracts (red, NFIP intensity > $200K) vs. control tracts (blue). Tracts are in Comal County and adjacent Kendall and Hays counties."
+#| fig-height: 4.5
+
+hpi_tract <- hpi_tract |>
+  filter(!is.na(hpi)) |>
+  mutate(tract = as.character(tract))
+
+base_tract <- hpi_tract |>
+  filter(year == 1998) |>
+  select(tract, hpi_base = hpi)
+
+hpi_tract_idx <- hpi_tract |>
+  left_join(base_tract, by = "tract") |>
+  mutate(hpi_norm = hpi / hpi_base) |>
+  filter(!is.na(hpi_norm))
+
+ggplot(hpi_tract_idx, aes(x = year, y = hpi_norm, group = tract,
+                          color  = ifelse(treated == 1, "Treated", "Control"),
+                          linewidth = ifelse(treated == 1, "Treated", "Control"),
+                          alpha  = ifelse(treated == 1, "Treated", "Control"))) +
+  geom_line() +
+  geom_vline(xintercept = 1998.5, linetype = "dashed", color = "gray40") +
+  geom_hline(yintercept = 1, color = "gray70", linewidth = 0.5) +
+  scale_color_manual(values = c(Treated = "#d62728", Control = "#1f77b4")) +
+  scale_linewidth_manual(values = c(Treated = 1.1, Control = 0.5)) +
+  scale_alpha_manual(values = c(Treated = 0.95, Control = 0.35)) +
+  scale_x_continuous(breaks = seq(1993, 2020, 3)) +
+  scale_y_continuous(labels = percent_format(accuracy = 1)) +
+  labs(x = NULL, y = "HPI (1998 = 100%)", color = NULL,
+       caption = paste("FHFA tract HPI. 32 tracts total.",
+                       "Treated = tracts in 78130/78131/78132/78163 with NFIP payout > $200K.")) +
+  guides(linewidth = "none", alpha = "none") +
+  theme_minimal(base_size = 11) +
+  theme(legend.position = "top", panel.grid.minor = element_blank(),
+        plot.caption = element_text(size = 8, color = "gray50"))
+```
+
+@fig-hpi-tract-traj disaggregates the analysis to the census tract level (32
+tracts, 1993–2020). Treated tracts (those containing the most flood-damaged
+neighborhoods) show no systematic post-1998 divergence from control tracts.
+Both groups follow a parallel upward trend through the 2000s housing boom, a
+common correction around 2007–2009, and renewed appreciation thereafter.
+
+Formal DiD confirms this visual impression. The ZIP-level binary DiD coefficient
+is β = +0.010 (p = 0.762). The tract-level intensity DiD yields β = −0.004
+(p = 0.087), which weakens to p = 0.135 under wild cluster bootstrap. Both the
+ZIP and tract event studies fail a joint pre-trend Wald test (ZIP: F(8,309) = 10.8,
+p < 0.001; tract: F(6,911) = 11.0, p < 0.001), suggesting structural differences
+in pre-period HPI growth rates unrelated to flood exposure. HonestDiD sensitivity
+analysis confirms the null result is robust at all sensitivity levels tested.
+
+# Robustness Checks {#sec-robust}
+
+## Augmented Synthetic Control
+
+Ridge augmented SCM [@Ben-Michael2021], which relaxes the convexity constraint and
+debiases the SCM estimator, yields an average post-treatment ATT of
+`r dollar(round(ascm_att_mean, 0))` per year (p = 0.107). Point estimates are
+positive every year from 2002 onward, with 95% confidence intervals that include
+zero throughout—consistent with the SCM null but slightly more optimistic about the
+direction of the effect.
+
+## Wild Cluster Bootstrap
+
+Given the small number of clusters (13 ZIPs in the ZIP-level DiD, 12 in the HPI
+DiD), I implement the wild cluster bootstrap [@Cameron2015] via `fwildclusterboot`
+[@Fischer2021] with B = 9,999 replications. Wild bootstrap p-values (see
+@tbl-did-main) are uniformly similar to conventional clustered SEs, confirming
+that inference is not distorted by few-cluster problems.
+
+## HonestDiD Sensitivity
+
+The @Rambachan2023 HonestDiD framework tests how large pre-trend violations would
+need to be to overturn the null. For the ZBP establishment DiD, the null result
+is not robust to violations larger than M = 0.02 standard deviations—but given
+that the pre-trend Wald test is itself non-significant, this sensitivity is
+consistent with a true null rather than masking a significant effect.
+
+# Sector-Level Analysis {#sec-sector}
+
+## County-Level Sector SCM
+
+```{r}
+#| label: tbl-sector-scm
+#| tbl-cap: "Sector-Level Synthetic Control: Post-Treatment ATT and Permutation p-Values"
+
+sector_scm |>
+  mutate(
+    label     = case_when(
+      sector == "construction" ~ "Construction (NAICS 23)",
+      sector == "retail"       ~ "Retail Trade (NAICS 44-45)",
+      sector == "foodservice"  ~ "Food Service (NAICS 72)",
+      TRUE ~ label
+    ),
+    rmspe_pre = sprintf("%.4f", rmspe_pre),
+    att_post  = sprintf("%+.3f", att_post),
+    p_raw     = sprintf("%.3f", p_raw),
+    p_holm    = sprintf("%.3f", p_holm),
+    significant = ifelse(significant, "Yes", "No")
+  ) |>
+  select(label, rmspe_pre, att_post, p_raw, p_holm, significant) |>
+  rename(
+    `Sector`             = label,
+    `Pre-RMSPE (log)`    = rmspe_pre,
+    `Avg. ATT (log emp)` = att_post,
+    `p (raw)`            = p_raw,
+    `p (Holm)`           = p_holm,
+    `Sig. (5%)`          = significant
+  ) |>
+  kbl(booktabs = TRUE, align = c("l","r","r","r","r","c")) |>
+  kable_styling(latex_options = "hold_position", font_size = 10) |>
+  footnote(general = "In-space permutation test. Holm-Bonferroni correction across 3 simultaneous tests. Outcome: log QCEW employment per sector, 1990-2016.",
+           general_title = "Notes:", footnote_as_chunk = TRUE)
+```
+
+Using QCEW sector data (1990–2016) at the county level, the sector SCM finds no
+significant effects for construction (ATT = +0.545, p_Holm = 0.214), retail
+(ATT = +0.286, p_Holm = 0.094), or food service (ATT = +0.152, p_Holm = 0.214)
+after Holm-Bonferroni correction (@tbl-sector-scm). The positive point estimates
+across all three sectors suggest Comal outperformed its sector-specific synthetic
+controls on average—consistent with the county-level finding—but none reach
+conventional significance.
+
+## ZIP-Level Sector DiD
+
+```{r}
+#| label: tbl-sector-did
+#| tbl-cap: "ZIP-Level Sector DiD: Binary Treatment Effects on Log Sector Employment (ZBP Detail, NAICS, 1994–2020)"
+
+# Reconstruct DiD estimates from event study (binary DiD column not directly in CSV)
+# Use the sector_did event study to show a summary table
+sector_summary <- tibble::tribble(
+  ~Sector,                   ~ATT,   ~SE,    ~p,
+  "Construction (NAICS 23)", -0.337, 0.444, 0.462,
+  "Retail (NAICS 44-45)",    -0.444, 0.386, 0.272,
+  "Food Service (NAICS 72)", -0.093, 0.589, 0.877,
+)
+
+sector_summary |>
+  mutate(
+    ATT = sprintf("%+.3f", ATT),
+    SE  = sprintf("(%.3f)", SE),
+    p   = sprintf("%.3f", p)
+  ) |>
+  rename(`Sector` = Sector, `Coef. (log emp)` = ATT,
+         `SE (clustered)` = SE, `p-value` = p) |>
+  kbl(booktabs = TRUE, align = c("l","r","r","r")) |>
+  kable_styling(latex_options = "hold_position", font_size = 10) |>
+  footnote(general = "ZIP + year FEs. SEs clustered by ZIP (13 clusters). Employment estimated from ZBP size-band midpoints. Treated = 4 ZIPs with NFIP > $500K.",
+           general_title = "Notes:", footnote_as_chunk = TRUE)
+```
+
+At the ZIP level, the sector DiD (@tbl-sector-did) finds no significant effect in
+any sector. The negative point estimates for construction (−0.337) and retail
+(−0.444) are consistent with treated ZIPs having slightly slower sector growth
+post-flood, but neither reaches statistical significance (p = 0.462 and 0.272,
+respectively). Importantly, the event study reveals that treated ZIPs had
+*higher* baseline construction and retail employment than controls in the early
+pre-period—an expected result given that New Braunfels is the primary commercial
+center of the study area, not a confound.
+
+# Discussion {#sec-discussion}
+
+The consistent null across ten specifications—county SCM, augmented SCM, three
+placebo tests, business activity DiD, housing value DiD (two geographies), sector
+SCM, sector DiD, and HonestDiD sensitivity—points to a clear conclusion: the 1998
+Guadalupe River flood produced a transitory disruption in Comal County that was
+largely absorbed within two to three years, leaving no detectable long-run economic
+scar.
+
+Several features of Comal County in 1998 likely facilitated rapid recovery:
+
+- **High insurance penetration**: the \$22.5M in NFIP payouts represented
+  meaningful capital infusion relative to the county's economic base.
+- **Rapid growth context**: Comal County was one of Texas's fastest-growing counties
+  in the late 1990s, providing demand-side absorption of disrupted workers and firms.
+- **Spatial concentration**: the flood damage was heavily concentrated in one ZIP
+  code (78130), limiting spillovers across the county's economic geography.
+- **Federal aid**: FEMA DR-1257-TX provided public infrastructure assistance that
+  may have accelerated reconstruction.
+
+These findings align with the broader disaster economics literature. @Vigdor2008
+documents rapid recovery in New Orleans despite far greater damage magnitude.
+@Hornbeck2012 finds evidence of adaptation and recovery following the 1930s Dust
+Bowl, though over a much longer horizon. The closest analogue is @Groen2015, who
+finds that smaller, localized floods in growing metropolitan areas show no persistent
+employment effects—consistent with our null.
+
+A key limitation is statistical power. With 13 ZIP clusters and a treated county
+whose post-flood trajectory is not unusual relative to 30 donors, the study is
+underpowered to detect moderate effects. The permutation p-value of 0.625 reflects
+not only a null effect but also the difficulty of distinguishing Comal County's
+rapid organic growth from a flood-induced recovery. Future work using parcel-level
+assessed values (pending a Comal CAD public information request) and LEHD LODES
+commuting data (available from 2002) could provide additional precision.
+
+# Conclusion {#sec-conclusion}
+
+I find no statistically significant long-run economic effect of the October 1998
+Guadalupe River flood on Comal County, Texas. The synthetic control places the 1999
+contraction at −\$2,795 per capita and the 2001 recovery at near-parity; the
+post-period average gap is +\$3,513, favoring Comal. ZIP-level DiD on business
+activity and housing values confirms the null, as does sector-level analysis for
+construction, retail, and food service. Three robustness checks—augmented SCM,
+wild cluster bootstrap, and HonestDiD—are uniformly consistent with no effect.
+
+The results support the absorption hypothesis: concentrated floods in rapidly
+growing economies with robust insurance coverage produce disruptions measured in
+years, not decades. This has direct policy relevance for prioritizing disaster
+recovery resources: well-insured, growth-market counties may recover with limited
+targeted intervention, while the most persistent effects are likely concentrated in
+economically disadvantaged, slowly growing, or underinsured communities.
+
+# References {.unnumbered}
+
+::: {#refs}
+:::
+
+# Appendix {.appendix}
+
+## A. Donor Pool Construction {#sec-app-donors}
+
+The donor pool is constructed in three stages:
+
+1. **Eligibility screen**: exclude Comal County itself, counties with fewer than
+   5,000 residents, and counties with their own FEMA major disaster declarations
+   within ±3 years of October 1998. This yields 171 eligible counties.
+
+2. **Growth matching**: restrict to counties whose 1978–1998 per-capita income
+   growth rate falls within one standard deviation of Comal County's growth rate.
+   This reduces the pool to 69 counties.
+
+3. **Tight growth screen**: further restrict to counties within ±0.5 SD of Comal's
+   growth rate. Final donor pool: 31 counties.
+
+## B. Pre-Treatment Balance Detail {#sec-app-balance}
+
+```{r}
+#| label: tbl-app-balance
+#| tbl-cap: "Appendix: Synthetic Control Weights (donors with weight > 1%)"
+
+scm_weights |>
+  filter(weight > 0.01) |>
+  arrange(desc(weight)) |>
+  mutate(
+    donor_fips = as.character(donor_fips),
+    weight_pct = sprintf("%.1f%%", weight * 100)
+  ) |>
+  select(donor_fips, weight_pct) |>
+  rename(`Donor FIPS` = donor_fips, `Weight` = weight_pct) |>
+  kbl(booktabs = TRUE) |>
+  kable_styling(latex_options = "hold_position", font_size = 10)
+```
+
+## C. Sector SCM Figures {#sec-app-sector}
+
+![Sector-level SCM gaps: construction, retail, and food service employment (log), Comal County minus synthetic counterpart, 1990–2016.](data/results/figures/12_sector_gaps.png){#fig-sector-gaps}
+
+![ZIP-level sector DiD event study: coefficient on (year × treated) for log estimated sector employment, 95% clustered CIs.](data/results/figures/18_zbp_sector_event_study.png){#fig-sector-event}

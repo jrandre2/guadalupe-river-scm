@@ -170,6 +170,83 @@ def build_panel() -> pd.DataFrame:
     return panel
 
 
+def build_sector_panel() -> pd.DataFrame | None:
+    """Build sector-level SCM panel for construction, retail, and food service.
+
+    Loads the wide-format qcew_sectors harmonized panel, deflates wage columns,
+    checks suppression rates, and exports as CSV for R/08_scm_sector.R.
+
+    Returns None if the sectors panel is not yet built (need to re-acquire QCEW).
+    """
+    sectors_path = PANELS_DIR / "qcew_sectors.parquet"
+    if not sectors_path.exists():
+        log.warning("sector_panel_missing", msg="Run harmonize_qcew_sectors() first")
+        return None
+
+    df = load_parquet(sectors_path)
+    df["fips"] = df["fips"].astype(str).str.zfill(5)
+    df["year"] = df["year"].astype(int)
+
+    # Load donor pool to report suppression rates over relevant counties
+    donor_path = PANELS_DIR / "scm_fips_list.csv"
+    if donor_path.exists():
+        donor_fips = pd.read_csv(donor_path, dtype=str)["fips"].str.zfill(5).tolist()
+        treated_fips = get_treated_fips()
+        pool = set(donor_fips) | {treated_fips}
+        df_pool = df[df["fips"].isin(pool)].copy()
+    else:
+        log.warning("scm_fips_list_missing", msg="Suppression check skipped")
+        df_pool = df.copy()
+
+    # Report suppression rates per sector
+    sector_emp_cols = ["construction_emp", "retail_emp", "foodservice_emp"]
+    for col in sector_emp_cols:
+        if col in df_pool.columns:
+            missing_pct = df_pool[col].isna().mean() * 100
+            if missing_pct > 30:
+                log.warning("high_suppression", sector=col, pct_missing=round(missing_pct, 1))
+            else:
+                log.info("suppression_ok", sector=col, pct_missing=round(missing_pct, 1))
+
+    # Deflate wage columns to constant 2020 dollars
+    cpi = load_deflator()
+    deflator_map = dict(zip(cpi["year"].astype(int), cpi["deflator"]))
+
+    wage_cols = ["construction_wages", "retail_wages", "foodservice_wages"]
+    for col in wage_cols:
+        if col in df.columns:
+            df[f"{col}_real"] = df[col] * df["year"].map(deflator_map)
+
+    # Merge total per-capita income and population from main SCM panel
+    # (used as covariates in the sector SCM predictors)
+    scm_path = PANELS_DIR / "scm_panel.parquet"
+    if scm_path.exists():
+        scm = load_parquet(scm_path)
+        scm["fips"] = scm["fips"].astype(str).str.zfill(5)
+        scm["year"] = scm["year"].astype(int)
+        covariate_cols = ["fips", "year", "per_capita_income_real", "population",
+                          "laus_unemployment_rate", "emp_pop_ratio"]
+        covariates = scm[[c for c in covariate_cols if c in scm.columns]].copy()
+        df = df.merge(covariates, on=["fips", "year"], how="left")
+
+    df = df.sort_values(["fips", "year"]).reset_index(drop=True)
+
+    # Save as CSV (for R)
+    out_dir = PANELS_DIR
+    out_dir.mkdir(parents=True, exist_ok=True)
+    csv_path = out_dir / "scm_sector_panel.csv"
+    df.to_csv(csv_path, index=False)
+
+    log.info(
+        "sector_panel_built",
+        rows=len(df),
+        cols=len(df.columns),
+        counties=df["fips"].nunique(),
+        years=f"{df['year'].min()}-{df['year'].max()}",
+    )
+    return df
+
+
 def save_panel(panel: pd.DataFrame | None = None) -> dict[str, Path]:
     """Build (if needed) and save the panel in multiple formats."""
     if panel is None:

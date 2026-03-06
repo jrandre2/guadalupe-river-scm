@@ -167,6 +167,78 @@ def harmonize_qcew() -> pd.DataFrame | None:
     return df_private
 
 
+# ── BLS QCEW Sectors ──────────────────────────────────────────────────
+
+# Maps BLS 2-digit NAICS codes to clean sector names
+_SECTOR_CODE_MAP = {
+    "23":    "construction",
+    "44-45": "retail",
+    "72":    "foodservice",
+}
+
+
+def harmonize_qcew_sectors() -> pd.DataFrame | None:
+    """BLS QCEW sector-level data for construction, retail, and food service.
+
+    Uses own_code=5 (private sector) and 2-digit NAICS codes 23, 44-45, 72.
+    Returns a wide-format panel with columns {sector}_emp, {sector}_wages,
+    {sector}_estab for each of the three sectors.
+
+    Requires bls_qcew.py to have been run with SECTOR_CODES enabled.
+    """
+    df = _load_raw("bls_qcew", "qcew_tx_counties.parquet")
+    if df is None:
+        return None
+
+    df = _standardize_fips(df)
+    df = _ensure_year_int(df)
+
+    # Filter to private sector (own_code=5) and the three target sectors
+    sector_codes = set(_SECTOR_CODE_MAP.keys())
+    mask = (df["own_code"].astype(str) == "5") & (df["industry_code"].astype(str).isin(sector_codes))
+    df_sectors = df[mask].copy()
+
+    if df_sectors.empty:
+        log.warning("qcew_sectors_empty", msg="Re-run make acquire-bls_qcew with SECTOR_CODES")
+        return None
+
+    for col in ["establishments", "employment", "total_wages", "avg_annual_pay"]:
+        if col in df_sectors.columns:
+            df_sectors[col] = pd.to_numeric(df_sectors[col], errors="coerce")
+
+    # Add sector name column
+    df_sectors["sector"] = df_sectors["industry_code"].astype(str).map(_SECTOR_CODE_MAP)
+
+    # Pivot to wide format: one row per (fips, year), columns per sector
+    result_frames = []
+    for code, name in _SECTOR_CODE_MAP.items():
+        sub = df_sectors[df_sectors["industry_code"].astype(str) == code][
+            ["fips", "year", "employment", "total_wages", "establishments"]
+        ].copy()
+        sub = sub.rename(columns={
+            "employment":    f"{name}_emp",
+            "total_wages":   f"{name}_wages",
+            "establishments": f"{name}_estab",
+        })
+        result_frames.append(sub)
+
+    # Merge all sectors on fips+year
+    wide = result_frames[0]
+    for frame in result_frames[1:]:
+        wide = wide.merge(frame, on=["fips", "year"], how="outer")
+
+    wide = wide.sort_values(["fips", "year"]).reset_index(drop=True)
+
+    _save_processed(wide, "qcew_sectors")
+    log.info(
+        "harmonized_qcew_sectors",
+        rows=len(wide),
+        counties=wide["fips"].nunique(),
+        years=f"{wide['year'].min()}-{wide['year'].max()}",
+    )
+    return wide
+
+
 # ── BLS LAUS ──────────────────────────────────────────────────────────
 
 def harmonize_laus() -> pd.DataFrame | None:
@@ -441,6 +513,7 @@ def run_all() -> dict[str, pd.DataFrame | None]:
         "bea": harmonize_bea(),
         "bds": harmonize_bds(),
         "qcew": harmonize_qcew(),
+        "qcew_sectors": harmonize_qcew_sectors(),
         "laus": harmonize_laus(),
         "cbp": harmonize_cbp(),
         "bps": harmonize_bps(),

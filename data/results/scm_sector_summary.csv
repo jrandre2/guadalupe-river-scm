@@ -1,0 +1,4 @@
+sector,label,rmspe_pre,att_post,p_raw,p_holm,significant
+construction,Construction (NAICS 23),0.0385,0.5452,0.133,0.214,FALSE
+retail,Retail Trade (NAICS 44-45),0.0179,0.2858,0.031,0.094,FALSE
+foodservice,Food Service & Accommodation (NAICS 72),0.0179,0.1525,0.107,0.214,FALSE
