@@ -36,3 +36,8 @@ Thumbs.db
 .Rdata
 .RData
 .Ruserdata
+
+# Quarto generated outputs (HTML intermediate; PDF is kept at root)
+manuscript.html
+*_files/
+.quarto/
